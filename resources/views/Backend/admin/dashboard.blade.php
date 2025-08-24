@@ -4,24 +4,24 @@
 
 @section('content')
     <div class="page-wrapper">
-            {{-- <div class="content">
+            <div class="content">
                 <div class="row">
                     <div class="col-md-6 col-sm-6 col-lg-6 col-xl-3">
                         <div class="dash-widget">
-							<span class="dash-widget-bg1"><i class="fas fa-hospital" aria-hidden="true"></i></span>
+							<span class="dash-widget-bg1"><i class="fa fa-stethoscope" aria-hidden="true"></i></span>
 							<div class="text-right dash-widget-info">
-								<h3>{{ $clinic_count }}</h3>
-								<span class="widget-title1">Clinics <i class="fa fa-check" aria-hidden="true"></i></span>
+								<h3>{{ $department_count }}</h3>
+								<span class="widget-title1">Departments <i class="fa fa-check" aria-hidden="true"></i></span>
 							</div>
                         </div>
                     </div>
 
                     <div class="col-md-6 col-sm-6 col-lg-6 col-xl-3">
                         <div class="dash-widget">
-                            <span class="dash-widget-bg4"><i class="fa fa-stethoscope" aria-hidden="true"></i></span>
+                            <span class="dash-widget-bg4"><i class="fas fa-user" aria-hidden="true"></i></span>
                             <div class="text-right dash-widget-info">
-                                <h3>{{ $department_count }}</h3>
-                                <span class="widget-title4">Departments <i class="fa fa-check" aria-hidden="true"></i></span>
+                                <h3>{{ $employee_count }}</h3>
+                                <span class="widget-title4">Employees <i class="fa fa-check" aria-hidden="true"></i></span>
                             </div>
                         </div>
                     </div>
@@ -38,18 +38,6 @@
 
                     <div class="col-md-6 col-sm-6 col-lg-6 col-xl-3">
                         <div class="dash-widget">
-                            <span class="dash-widget-bg1" style="background-color: #4b5563;">
-                                <i class="fas fa-user" aria-hidden="true"></i>
-                            </span>
-                            <div class="text-right dash-widget-info">
-                                <h3>{{ $employee_count }}</h3>
-                                <span class="widget-title1"  style="background-color: #4b5563;">Employees <i class="fa fa-check" aria-hidden="true"></i></span>
-                            </div>
-                        </div>
-                    </div>
-
-                    <div class="col-md-6 col-sm-6 col-lg-6 col-xl-3">
-                        <div class="dash-widget">
                             <span class="dash-widget-bg3"><i class="fas fa-user-injured" aria-hidden="true"></i></span>
                             <div class="text-right dash-widget-info">
                                 <h3>{{ $patient_count }}</h3>
@@ -58,7 +46,7 @@
                         </div>
                     </div>
 
-                    <div class="col-md-6 col-sm-6 col-lg-6 col-xl-3">
+                    {{-- <div class="col-md-6 col-sm-6 col-lg-6 col-xl-3">
                         <div class="dash-widget">
                             <span class="dash-widget-bg3" style="background-color: #e83e8c;"><i class="fas fa-capsules" aria-hidden="true"></i></span>
                             <div class="text-right dash-widget-info">
@@ -86,7 +74,7 @@
                                 <span class="widget-title2" style="background-color: #6f42c1;">Today Appointments <i class="fa fa-check" aria-hidden="true"></i></span>
                             </div>
                         </div>
-                    </div>
+                    </div> --}}
 
                 </div>
 				<div class="row">
@@ -425,7 +413,7 @@
 						</div>
 					 </div>
 				</div>
-            </div> --}}
+            </div>
             <div class="notification-box">
                 <div class="msg-sidebar notifications msg-noti">
                     <div class="topnav-dropdown-header">

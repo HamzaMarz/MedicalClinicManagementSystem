@@ -1,6 +1,6 @@
 @extends('Backend.master')
 
-@section('title' , 'Edit Employee')
+@section('title' , 'Edit Department Manager')
 
 @section('content')
 <style>
@@ -20,30 +20,30 @@
     <div class="content">
         <div class="row">
             <div class="col-lg-8 offset-lg-2">
-                <h4 class="page-title" style="margin-bottom:30px;">Edit Employee</h4>
+                <h4 class="page-title" style="margin-bottom:30px;">Edit Department Manager</h4>
             </div>
         </div>
 
         <div class="row">
             <div class="col-lg-8 offset-lg-2">
-                <form  method="POST" action="{{ route('update_employee', ['id' => $employee->id]) }}" enctype="multipart/form-data">
+                <form  method="POST" action="{{ route('update_department_manager', ['id' => $departmentManager->id]) }}" enctype="multipart/form-data">
                     @csrf
                     @method('PUT')
 
-                    <input type="hidden" id="employee_id" value="{{ $employee->id }}">
+                    <input type="hidden" id="departmentManager_id" value="{{ $departmentManager->id }}">
 
                     {{-- 1) Employee Information --}}
                     <div class="card">
-                        <div class="card-header">Employee Information</div>
+                        <div class="card-header">Department Manager Information</div>
                         <div class="card-body">
                             <div class="row">
                                 <div class="col-sm-6">
-                                    <label>Employee Name <span class="text-danger">*</span></label>
+                                    <label>Department Manager Name <span class="text-danger">*</span></label>
                                     <div class="input-group">
                                         <div class="input-group-prepend">
                                             <span class="input-group-text"><i class="fa fa-user"></i></span>
                                         </div>
-                                        <input type="text" class="form-control" id="name" name="name" value="{{ $employee->user->name }}">
+                                        <input type="text" class="form-control" id="name" name="name" value="{{ $departmentManager->user->name }}">
                                     </div>
                                 </div>
 
@@ -53,7 +53,7 @@
                                         <div class="input-group-prepend">
                                             <span class="input-group-text"><i class="fa fa-calendar-alt"></i></span>
                                         </div>
-                                        <input type="date" class="form-control" id="date_of_birth" name="date_of_birth" value="{{ $employee->user->date_of_birth }}">
+                                        <input type="date" class="form-control" id="date_of_birth" name="date_of_birth" value="{{ $departmentManager->user->date_of_birth }}">
                                     </div>
                                 </div>
 
@@ -63,7 +63,7 @@
                                         <div class="input-group-prepend">
                                             <span class="input-group-text"><i class="fa fa-phone"></i></span>
                                         </div>
-                                        <input type="text" class="form-control" id="phone" name="phone" value="{{ $employee->user->phone }}">
+                                        <input type="text" class="form-control" id="phone" name="phone" value="{{ $departmentManager->user->phone }}">
                                     </div>
                                 </div>
 
@@ -73,7 +73,7 @@
                                         <div class="input-group-prepend">
                                             <span class="input-group-text"><i class="fa fa-envelope"></i></span>
                                         </div>
-                                        <input type="email" class="form-control" id="email" name="email" value="{{ $employee->user->email }}">
+                                        <input type="email" class="form-control" id="email" name="email" value="{{ $departmentManager->user->email }}">
                                     </div>
                                 </div>
 
@@ -103,7 +103,7 @@
                                         <div class="input-group-prepend">
                                             <span class="input-group-text"><i class="fa fa-map-marker-alt"></i></span>
                                         </div>
-                                        <input type="text" class="form-control" id="address" name="address" value="{{ $employee->user->address }}">
+                                        <input type="text" class="form-control" id="address" name="address" value="{{ $departmentManager->user->address }}">
                                     </div>
                                 </div>
 
@@ -111,7 +111,7 @@
                                     <label>Avatar</label>
                                     <div class="profile-upload">
                                         <div class="upload-img">
-                                            <img alt="" src="{{ asset($employee->user->image ?? 'assets/img/user.jpg') }}">
+                                            <img alt="" src="{{ asset($departmentManager->user->image ?? 'assets/img/user.jpg') }}">
                                         </div>
                                         <div class="upload-input">
                                             <input type="file" class="form-control" id="image" name="image" accept="image/*">
@@ -154,59 +154,13 @@
                                             <option disabled hidden>Select Department</option>
                                             @foreach($departments as $department)
                                                 <option value="{{ $department->id }}"
-                                                    {{ $employee->department_id == $department->id ? 'selected' : '' }}>
+                                                    {{ $departmentManager->department_id == $department->id ? 'selected' : '' }}>
                                                     {{ $department->name }}
                                                 </option>
                                             @endforeach
                                         </select>
                                     </div>
                                 </div>
-
-                                <div class="row small-gutter">
-                                    <div class="col-sm-12">
-                                        <div class="form-group">
-                                            <label>Job Titles <span class="text-danger">*</span></label>
-                                            <div class="row gx-1">
-                                                {{-- العمود الأول --}}
-                                                <div class="col-6">
-                                                    @foreach(array_slice($job_titles->toArray(), 0, ceil(count($job_titles)/2)) as $title)
-                                                        <div class="form-check">
-                                                            <input class="form-check-input"
-                                                                   type="checkbox"
-                                                                   name="job_title_id[]"
-                                                                   value="{{ $title['id'] }}"
-                                                                   id="job_{{ $title['id'] }}"
-                                                                   {{-- ✅ يعمل check لو العنوان موجود مسبقاً في بيانات الموظف --}}
-                                                                   {{ $employee->jobTitles->pluck('id')->contains($title['id']) ? 'checked' : '' }}>
-                                                            <label class="form-check-label" for="job_{{ $title['id'] }}">
-                                                                {{ $title['name'] }}
-                                                            </label>
-                                                        </div>
-                                                    @endforeach
-                                                </div>
-
-                                                {{-- العمود الثاني --}}
-                                                <div class="col-6">
-                                                    @foreach(array_slice($job_titles->toArray(), ceil(count($job_titles)/2)) as $title)
-                                                        <div class="form-check">
-                                                            <input class="form-check-input"
-                                                                   type="checkbox"
-                                                                   name="job_title_id[]"
-                                                                   value="{{ $title['id'] }}"
-                                                                   id="job_{{ $title['id'] }}"
-                                                                   {{ $employee->jobTitles->pluck('id')->contains($title['id']) ? 'checked' : '' }}>
-                                                            <label class="form-check-label" for="job_{{ $title['id'] }}">
-                                                                {{ $title['name'] }}
-                                                            </label>
-                                                        </div>
-                                                    @endforeach
-                                                </div>
-                                            </div>
-                                        </div>
-                                    </div>
-                                </div>
-
-
                             </div>
                         </div>
                     </div>
@@ -214,113 +168,112 @@
                     {{-- 3) Work Schedule --}}
                     <div class="card">
                         <div class="card-header">Work Schedule</div>
-                        <div class="card-body">
-                            <div class="row">
+                            <div class="card-body">
+                                <div class="row">
 
-                                {{-- Start Time --}}
-                                <div class="col-sm-6">
-                                    <div class="form-group">
-                                        <label>Work Start Time <span class="text-danger">*</span></label>
-                                        <div class="input-group">
-                                            <div class="input-group-prepend">
-                                                <span class="input-group-text"><i class="fas fa-clock"></i></span>
-                                            </div>
-                                            <select name="work_start_time" id="work_start_time" class="form-control">
-                                                <option disabled hidden>Select Start Time</option>
-                                                @php
-                                                    $start = \Carbon\Carbon::createFromFormat('H:i:s', $clinic->work_start);
-                                                    $end   = \Carbon\Carbon::createFromFormat('H:i:s', $clinic->work_end);
-                                                    $savedStart = $employee->work_start_time ?? null; // القيمة المخزنة
-                                                @endphp
-                                                @for ($time = $start->copy(); $time->lte($end); $time->addHour())
-                                                    <option value="{{ $time->format('H:i:s') }}"
-                                                        {{ $savedStart === $time->format('H:i:s') ? 'selected' : '' }}>
-                                                        {{ $time->format('H:i') }}
-                                                    </option>
-                                                @endfor
-                                            </select>
-                                        </div>
-                                    </div>
-                                </div>
-
-                                {{-- End Time --}}
-                                <div class="col-sm-6">
-                                    <div class="form-group">
-                                        <label>Work End Time <span class="text-danger">*</span></label>
-                                        <div class="input-group">
-                                            <div class="input-group-prepend">
-                                                <span class="input-group-text"><i class="fas fa-clock"></i></span>
-                                            </div>
-                                            <select name="work_end_time" id="work_end_time" class="form-control">
-                                                <option disabled hidden>Select End Time</option>
-                                                @php
-                                                    $savedEnd = $employee->work_end_time ?? null; // القيمة المخزنة
-                                                @endphp
-                                                @for ($time = $start->copy(); $time->lte($end); $time->addHour())
-                                                    <option value="{{ $time->format('H:i:s') }}"
-                                                        {{ $savedEnd === $time->format('H:i:s') ? 'selected' : '' }}>
-                                                        {{ $time->format('H:i') }}
-                                                    </option>
-                                                @endfor
-                                            </select>
-                                        </div>
-                                    </div>
-                                </div>
-
-                                {{-- Working Days --}}
-                                <div class="row small-gutter w-100">
-                                    <div class="col-sm-12">
+                                    {{-- Start Time --}}
+                                    <div class="col-sm-6">
                                         <div class="form-group">
-                                            <label>Working Days <span class="text-danger">*</span></label>
-                                            <div class="row gx-1">
-                                                @php
-                                                    $daysColumn1 = ['Saturday','Sunday','Monday','Tuesday'];
-                                                    $daysColumn2 = ['Wednesday','Thursday','Friday'];
-                                                    $clinicDays  = $clinic->work_days ?? []; // أيام العيادة
-                                                    $savedDays   = $employee->working_days ?? []; // الأيام المحفوظة للموظف
-                                                @endphp
-
-                                                {{-- العمود الأول --}}
-                                                <div class="col-6">
-                                                    @foreach($daysColumn1 as $day)
-                                                        <div class="form-check {{ in_array($day, $clinicDays) ? '' : 'text-muted' }}">
-                                                            <input class="form-check-input"
-                                                                   type="checkbox"
-                                                                   name="working_days[]"
-                                                                   value="{{ $day }}"
-                                                                   id="day_{{ $day }}"
-                                                                   {{ in_array($day, $clinicDays) ? '' : 'disabled' }}
-                                                                   {{ in_array($day, $savedDays ?? []) ? 'checked' : '' }}>
-                                                            <label class="form-check-label" for="day_{{ $day }}">
-                                                                {{ $day }}
-                                                            </label>
-                                                        </div>
-                                                    @endforeach
+                                            <label>Work Start Time <span class="text-danger">*</span></label>
+                                            <div class="input-group">
+                                                <div class="input-group-prepend">
+                                                    <span class="input-group-text"><i class="fas fa-clock"></i></span>
                                                 </div>
+                                                <select name="work_start_time" id="work_start_time" class="form-control">
+                                                    <option disabled hidden>Select Start Time</option>
+                                                    @php
+                                                        $start = \Carbon\Carbon::createFromFormat('H:i:s', $clinic->work_start);
+                                                        $end   = \Carbon\Carbon::createFromFormat('H:i:s', $clinic->work_end);
+                                                        $savedStart = $departmentManager->work_start_time ?? null; // القيمة المخزنة
+                                                    @endphp
+                                                    @for ($time = $start->copy(); $time->lte($end); $time->addHour())
+                                                        <option value="{{ $time->format('H:i:s') }}"
+                                                            {{ $savedStart === $time->format('H:i:s') ? 'selected' : '' }}>
+                                                            {{ $time->format('H:i') }}
+                                                        </option>
+                                                    @endfor
+                                                </select>
+                                            </div>
+                                        </div>
+                                    </div>
 
-                                                {{-- العمود الثاني --}}
-                                                <div class="col-6">
-                                                    @foreach($daysColumn2 as $day)
-                                                        <div class="form-check {{ in_array($day, $clinicDays) ? '' : 'text-muted' }}">
-                                                            <input class="form-check-input"
-                                                                   type="checkbox"
-                                                                   name="working_days[]"
-                                                                   value="{{ $day }}"
-                                                                   id="day_{{ $day }}"
-                                                                   {{ in_array($day, $clinicDays) ? '' : 'disabled' }}
-                                                                   {{ in_array($day, $savedDays ?? []) ? 'checked' : '' }}>
-                                                            <label class="form-check-label" for="day_{{ $day }}">
-                                                                {{ $day }}
-                                                            </label>
-                                                        </div>
-                                                    @endforeach
+                                    {{-- End Time --}}
+                                    <div class="col-sm-6">
+                                        <div class="form-group">
+                                            <label>Work End Time <span class="text-danger">*</span></label>
+                                            <div class="input-group">
+                                                <div class="input-group-prepend">
+                                                    <span class="input-group-text"><i class="fas fa-clock"></i></span>
+                                                </div>
+                                                <select name="work_end_time" id="work_end_time" class="form-control">
+                                                    <option disabled hidden>Select End Time</option>
+                                                    @php
+                                                        $savedEnd = $departmentManager->work_end_time ?? null; 
+                                                    @endphp
+                                                    @for ($time = $start->copy(); $time->lte($end); $time->addHour())
+                                                        <option value="{{ $time->format('H:i:s') }}"
+                                                            {{ $savedEnd === $time->format('H:i:s') ? 'selected' : '' }}>
+                                                            {{ $time->format('H:i') }}
+                                                        </option>
+                                                    @endfor
+                                                </select>
+                                            </div>
+                                        </div>
+                                    </div>
+
+                                    {{-- Working Days --}}
+                                    <div class="row small-gutter w-100">
+                                        <div class="col-sm-12">
+                                            <div class="form-group">
+                                                <label>Working Days <span class="text-danger">*</span></label>
+                                                <div class="row gx-1">
+                                                    @php
+                                                        $daysColumn1 = ['Saturday','Sunday','Monday','Tuesday'];
+                                                        $daysColumn2 = ['Wednesday','Thursday','Friday'];
+                                                        $clinicDays  = $clinic->work_days ?? []; // أيام العيادة
+                                                        $savedDays   = $departmentManager->working_days ?? []; // الأيام المحفوظة للموظف
+                                                    @endphp
+                                    
+                                                    {{-- العمود الأول --}}
+                                                    <div class="col-6">
+                                                        @foreach($daysColumn1 as $day)
+                                                            <div class="form-check {{ in_array($day, $clinicDays) ? '' : 'text-muted' }}">
+                                                                <input class="form-check-input"
+                                                                    type="checkbox"
+                                                                    name="working_days[]"
+                                                                    value="{{ $day }}"
+                                                                    id="day_{{ $day }}"
+                                                                    {{ in_array($day, $clinicDays) ? '' : 'disabled' }}
+                                                                    {{ in_array($day, $savedDays ?? []) ? 'checked' : '' }}>
+                                                                <label class="form-check-label" for="day_{{ $day }}">
+                                                                    {{ $day }}
+                                                                </label>
+                                                            </div>
+                                                        @endforeach
+                                                    </div>
+                                    
+                                                    {{-- العمود الثاني --}}
+                                                    <div class="col-6">
+                                                        @foreach($daysColumn2 as $day)
+                                                            <div class="form-check {{ in_array($day, $clinicDays) ? '' : 'text-muted' }}">
+                                                                <input class="form-check-input"
+                                                                    type="checkbox"
+                                                                    name="working_days[]"
+                                                                    value="{{ $day }}"
+                                                                    id="day_{{ $day }}"
+                                                                    {{ in_array($day, $clinicDays) ? '' : 'disabled' }}
+                                                                    {{ in_array($day, $savedDays ?? []) ? 'checked' : '' }}>
+                                                                <label class="form-check-label" for="day_{{ $day }}">
+                                                                    {{ $day }}
+                                                                </label>
+                                                            </div>
+                                                        @endforeach
+                                                    </div>
                                                 </div>
                                             </div>
                                         </div>
                                     </div>
-                                </div>
-
-
+                                
                             </div>
                         </div>
                     </div>
@@ -335,21 +288,21 @@
                                 <div class="mb-3 col-sm-12">
                                     <label for="short_biography">Short Biography</label>
                                     <div class="input-group">
-                                        <textarea id="short_biography" name="short_biography" class="form-control" rows="4" placeholder="Write a short bio...">{{ $employee->short_biography }}</textarea>
+                                        <textarea id="short_biography" name="short_biography" class="form-control" rows="4" placeholder="Write a short bio...">{{ $departmentManager->short_biography }}</textarea>
                                     </div>
                                 </div>
 
                                 {{-- Account Status --}}
                                 <div class="mb-3 col-sm-12">
                                     <div class="form-check form-check-inline">
-                                        <input class="form-check-input" type="radio" name="status" id="employee_active" value="active"
-                                        {{ old('status', $employee->status ?? 'active') === 'active' ? 'checked' : '' }}>
-                                        <label class="form-check-label" for="employee_active">Active</label>
+                                        <input class="form-check-input" type="radio" name="status" id="departmentManager_active" value="active"
+                                        {{ old('status', $departmentManager->status ?? 'active') === 'active' ? 'checked' : '' }}>
+                                        <label class="form-check-label" for="departmentManager_active">Active</label>
                                     </div>
                                     <div class="form-check form-check-inline">
-                                        <input class="form-check-input" type="radio" name="status" id="employee_inactive" value="inactive"
-                                        {{ old('status', $employee->status ?? '') === 'inactive' ? 'checked' : '' }}>
-                                        <label class="form-check-label" for="employee_inactive">Inactive</label>
+                                        <input class="form-check-input" type="radio" name="status" id="departmentManager_inactive" value="inactive"
+                                        {{ old('status', $departmentManager->status ?? '') === 'inactive' ? 'checked' : '' }}>
+                                        <label class="form-check-label" for="departmentManager_inactive">Inactive</label>
                                     </div>
                                 </div>
                             </div>
@@ -359,7 +312,7 @@
                     {{-- Submit --}}
                     <div class="text-center" style="margin-top:20px;">
                         <button type="submit" class="btn btn-primary submit-btn addBtn" style="text-transform:none !important;">
-                            Edit Employee
+                            Edit Department Manager
                         </button>
                     </div>
                 </form>
@@ -381,7 +334,7 @@
             $('.addBtn').click(function (e) {
                 e.preventDefault();
 
-                let employeeId = $('#employee_id').val();
+                let departmentManagerId = $('#departmentManager_id').val();
                 let name = $('#name').val().trim();
                 let date_of_birth = $('#date_of_birth').val().trim();
                 let department_id = $('#department_id').val();
@@ -396,11 +349,6 @@
                 let short_biography = $('#short_biography').val().trim();
                 let status = $('input[name="status"]:checked').val();
                 let image = document.querySelector('#image').files[0];
-
-                let jobTitles = [];
-                $('input[name="job_title_id[]"]:checked').each(function () {
-                    jobTitles.push($(this).val());
-                });
 
                 let workingDays = [];
                 $('input[name="working_days[]"]:checked').each(function () {
@@ -428,17 +376,13 @@
                     formData.append('image', image);
                 }
 
-                jobTitles.forEach(function (id) {
-                    formData.append('job_title_id[]', id);
-                });
-
 
                 workingDays.forEach(function (day) {
                     formData.append('working_days[]', day);
                 });
 
 
-                if (name === '' || date_of_birth === '' || !isValidSelectValue('department_id')  || email === '' || phone === '' || address === '' || jobTitles.length === 0 || workingDays.length === 0 || !isValidSelectValue('work_start_time') || !isValidSelectValue('work_end_time') || gender === undefined) {
+                if (name === '' || date_of_birth === '' || !isValidSelectValue('department_id')  || email === '' || phone === '' || address === '' || workingDays.length === 0 || !isValidSelectValue('work_start_time') || !isValidSelectValue('work_end_time') || gender === undefined) {
                     Swal.fire({
                         title: 'Error!',
                         text: 'Please Enter All Required Fields',
@@ -457,7 +401,7 @@
                 }else{
                     $.ajax({
                         method: 'POST',
-                        url: "{{ route('update_employee', ['id' => $employee->id]) }}",
+                        url: "{{ route('update_department_manager', ['id' => $departmentManager->id]) }}",
                         data: formData,
                         processData: false,
                         contentType: false,
@@ -469,26 +413,25 @@
                         if (response.data == 0) {
                             Swal.fire({
                                 title: 'Error!',
-                                text: 'This Employee Already Exists',
+                                text: 'This Email Already Exists',
                                 icon: 'error',
                                 confirmButtonText: 'OK'
                             });
                         } else if (response.data == 1) {
                             Swal.fire({
                                 title: 'Success',
-                                text: 'Employee Has Been Added Successfully',
+                                text: 'Department Manager Has Been Edited Successfully',
                                 icon: 'success',
                                 confirmButtonText: 'OK'
                             }).then(() => {
-                                window.location.href = '/admin/view/employees';
+                                window.location.href = '/admin/view/departments-managers';
                             });
                         }
                     }
                 });
             }
-            });
         });
-
+    });
     </script>
 @endsection
 

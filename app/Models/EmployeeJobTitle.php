@@ -10,4 +10,13 @@ class EmployeeJobTitle extends Model{
         'employee_id',
         'job_title_id',
     ];
+
+    public function employee(){
+        return $this->belongsTo(Employee::class);
+    }
+
+    public function job_title(){
+        return $this->belongsTo(JobTitle::class);
+    }
+    
 }

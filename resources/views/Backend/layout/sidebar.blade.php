@@ -29,29 +29,60 @@
                 </li>
 
 
-                <li class="submenu {{ Request::is('admin/add/department') || Request::is('admin/view/departments') || Request::is('admin/edit/department/*') || Request::is('admin/description/department/*') || Request::is('admin/view/department-managers') ? 'active' : '' }}">
-                    <a href="#"><i class="fas fa-stethoscope"></i> <span> Departments </span> <span class="menu-arrow"></span></a>
-                    <ul style="{{ Request::is('admin/add/department') || Request::is('admin/view/departments') || Request::is('admin/edit/department/*') || Request::is('admin/description/department/*') || Request::is('admin/view/department-managers') ? '' : 'display: none;' }}">
+                <li class="submenu 
+                    {{ Request::is('admin/add/department') 
+                    || Request::is('admin/view/departments') 
+                    || Request::is('admin/edit/department/*') 
+                    || Request::is('admin/description/department/*') 
+                    || Request::is('admin/view/departments-managers') 
+                    || Request::is('admin/profile/department-manager/*') 
+                    || Request::is('admin/edit/department-manager/*') 
+                    ? 'active' : '' }}">
+                    
+                    <a href="#">
+                        <i class="fas fa-stethoscope"></i> 
+                        <span> Departments </span> 
+                        <span class="menu-arrow"></span>
+                    </a>
+                    <ul style="{{ Request::is('admin/add/department') 
+                        || Request::is('admin/view/departments') 
+                        || Request::is('admin/edit/department/*') 
+                        || Request::is('admin/description/department/*') 
+                        || Request::is('admin/view/departments-managers') 
+                        || Request::is('admin/profile/department-manager/*') 
+                        || Request::is('admin/edit/department-manager/*') 
+                        ? '' : 'display: none;' }}">
 
+                        {{-- إضافة قسم جديد --}}
                         <li>
-                            <a href="{{ route('add_department') }}" class="{{ Request::is('admin/add/department') ? 'active' : '' }}">
+                            <a href="{{ route('add_department') }}" 
+                            class="{{ Request::is('admin/add/department') ? 'active' : '' }}">
                                 Add Department
                             </a>
                         </li>
 
+                        {{-- عرض الأقسام --}}
                         <li>
-                            <a href="{{ route('view_departments') }}" class="{{ Request::is('admin/view/departments') || Request::is('admin/edit/department/*') || Request::is('admin/description/department/*') ? 'active' : '' }}">
+                            <a href="{{ route('view_departments') }}" 
+                            class="{{ Request::is('admin/view/departments') 
+                            || Request::is('admin/edit/department/*') 
+                            || Request::is('admin/description/department/*') ? 'active' : '' }}">
                                 View Department
                             </a>
                         </li>
 
+                        {{-- مدراء الأقسام --}}
                         <li>
-                            <a href="{{ route('view_department_managers') }}" class="{{ Request::is('admin/view/department-managers') ? 'active' : '' }}">
-                                Department Managers
+                            <a href="{{ route('view_departments_managers') }}" 
+                            class="{{ Request::is('admin/view/departments-managers') 
+                            || Request::is('admin/profile/department-manager/*') 
+                            || Request::is('admin/edit/department-manager/*') ? 'active' : '' }}">
+                                Departments Managers
                             </a>
                         </li>
                     </ul>
                 </li>
+
 
                 <li class="submenu {{ Request::is('admin/add/employee') || Request::is('admin/view/employees') || Request::is('admin/edit/employee/*') || Request::is('admin/profile/employee/*') ? 'active' : '' }}">
                     <a href="#">

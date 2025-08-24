@@ -59,7 +59,11 @@ Route::prefix('admin')->middleware(['auth', 'verified', 'role:admin'])->group(fu
     Route::put('/update/department/{id}' ,[DepartmentController::class , 'updateDepartment'])->name('update_department');
     Route::delete('/delete/department/{id}' ,[DepartmentController::class , 'deleteDepartment'])->name('delete_department');
 
-    Route::get('admin/view/department-managers', [DepartmentController::class, 'viewDepartmentsManagers'])->name('view_department_managers');
+    Route::get('/view/departments-managers', [DepartmentController::class, 'viewDepartmentsManagers'])->name('view_departments_managers');
+    Route::get('/profile/department-manager/{id}',[DepartmentController::class , 'profileDepartmentManager'])->name('profile_department_manager');
+    Route::get('/edit/department-manager/{id}' ,[DepartmentController::class , 'editDepartmentManager'])->name('edit_department_manager');
+    Route::put('/update/department-manager/{id}' ,[DepartmentController::class , 'updateDepartmentManager'])->name('update_department_manager');
+    Route::delete('/delete/department-manager/{id}' ,[DepartmentController::class , 'deleteDepartmentManager'])->name('delete_department_manager');
 
 
 
@@ -102,10 +106,11 @@ Route::prefix('admin')->middleware(['auth', 'verified', 'role:admin'])->group(fu
     Route::put('/update/patient/{id}' ,[PatientController::class , 'updatePatient'])->name('update_patient');
     Route::delete('/delete/patient/{id}' ,[PatientController::class , 'deletePatient'])->name('delete_patient');
 
-    Route::get('/get-departments-by-clinic/{clinic_id}', [PatientController::class, 'getDepartmentsByClinic']);    // عند اختيار العيادة – جلب التخصصات المرتبطة بها فقط
-    Route::get('/get-doctors-by-clinic-and-department', [PatientController::class, 'getDoctorsByClinicAndDepartment'])->name('get_doctors_by_clinic_and_department');  //  عند اختيار التخصص – جلب الأطباء الذين ينتمون لهذا التخصص فقط ومن نفس العيادة فقط
-    Route::get('/get-doctor-info/{id}', [PatientController::class, 'getDoctorInfo']);   // يرجع أوقات الدكتور للحجز معاه
-    Route::get('/doctor-working-days/{id}', [PatientController::class, 'getWorkingDays']);  // يرجع أيام الدكتور للحجز معاه
+    
+    Route::get('/get-doctors-by-department/{department_id}', [PatientController::class, 'getDoctorsByDepartment']);
+    Route::get('/get-doctor-info/{id}', [PatientController::class, 'getDoctorInfo']);
+    Route::get('/doctor-working-days/{id}', [PatientController::class, 'getWorkingDays']);
+
 
 
     //Appointment

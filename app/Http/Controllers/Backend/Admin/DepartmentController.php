@@ -5,9 +5,13 @@ namespace App\Http\Controllers\Backend\Admin;
 use App\Models\User;
 use App\Models\Doctor;
 use App\Models\Employee;
+use App\Models\JobTitle;
+use App\Models\ClinicInfo;
 use App\Models\Department;
 use Illuminate\Http\Request;
+use App\Models\EmployeeJobTitle;
 use App\Http\Controllers\Controller;
+use Illuminate\Support\Facades\Hash;
 
 class DepartmentController extends Controller{
 
@@ -99,6 +103,97 @@ class DepartmentController extends Controller{
 
 
     public function viewDepartmentsManagers(){
-        return view('Backend.admin.departments.departments_managers.view');
+        $job_title_id = JobTitle::where('name' , 'Department Manager')->pluck('id')->first();
+        $departmentsManagers = EmployeeJobTitle::where('job_title_id' , $job_title_id)->paginate(8);
+        return view('Backend.admin.departments.departments_managers.view' , compact('departmentsManagers'));
+    }
+
+
+
+    public function profileDepartmentManager($id){
+        $departmentManager = Employee::where('id' , $id)->first();
+        return view('Backend.admin.departments.departments_managers.profile' , compact('departmentManager'));
+    }
+
+
+
+    public function editDepartmentManager($id){
+        $departmentManager = Employee::where('id' , $id)->first();
+        $user = User::findOrFail($departmentManager->user_id);
+        $departments = Department::all();
+
+        $clinic = ClinicInfo::firstOrFail();
+
+        return view('Backend.admin.departments.departments_managers.edit', [
+            'departmentManager'=> $departmentManager,
+            'user'        => $user,
+            'departments' => $departments,
+            'clinic'      => $clinic,
+            'time_start'  => $clinic->work_start,
+            'time_end'    => $clinic->work_end,
+            'work_days'   => $clinic->work_days, 
+        ]);
+    }
+
+
+    public function updateDepartmentManager(Request $request , $id){
+        $departmentManager = Employee::findOrFail($id);
+        $user = User::findOrFail($departmentManager->user_id);
+
+        if (User::where('email', $request->email)->where('id', '!=', $user->id)->exists()) {
+            return response()->json(['data' => 0]);
+        }else{
+            $imageName = $user->image;
+            if ($request->hasFile('image')) {
+                $file = $request->file('image');
+                $imageName = 'employees/' . time() . '_' . $file->getClientOriginalName();
+                $file->move(public_path('employees'), $imageName);
+            }
+
+            $password = $user->password;
+            if ($request->filled('password')) {
+                $password = Hash::make($request->password);
+            }
+
+            $user->update([
+                'name'         => $request->name,
+                'email'        => $request->email,
+                'password'     => $password,
+                'phone'        => $request->phone,
+                'address'      => $request->filled('address') ? $request->address : null,
+                'image'        => $imageName,
+                'date_of_birth'=> $request->date_of_birth,
+                'gender'       => $request->gender,
+            ]);
+
+            $departmentManager->update([
+                'department_id'   => $request->department_id,
+                'work_start_time' => $request->work_start_time,
+                'work_end_time'   => $request->work_end_time,
+                'working_days'    => $request->working_days,
+                'status'          => $request->status,
+                'short_biography' => $request->short_biography,
+            ]);
+            return response()->json(['data' => 1]);
+        }
+    }
+
+
+
+
+
+    public function deleteDepartmentManager($id){
+        $departmentManager = Employee::findOrFail($id);
+        $user = User::findOrFail($departmentManager->user_id);
+
+        if ($departmentManager->doctor) {
+            $departmentManager->doctor->delete();
+        }
+        EmployeeJobTitle::where('employee_id', $departmentManager->id)->delete();
+
+        $departmentManager->delete();
+        $user->delete();
+        return response()->json(['success' => true]);
     }
 }
+

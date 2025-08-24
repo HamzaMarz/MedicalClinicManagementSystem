@@ -1,6 +1,6 @@
 @extends('Backend.master')
 
-@section('title', 'Employee Profile')
+@section('title', 'Department Manager Profile')
 
 @section('content')
 
@@ -19,16 +19,16 @@
     <div class="content">
         <div class="row">
             <div class="col-md-12">
-                <h4 class="page-title">Employee Profile</h4>
+                <h4 class="page-title">Department Manager Profile</h4>
             </div>
         </div>
 
         <div class="card-box">
             <div class="row">
                 <div class="text-center col-md-4">
-                    <img src="{{ $employee->user->image ? asset($employee->user->image) : asset('assets/img/user.jpg') }}" alt="Employee Image"
+                    <img src="{{ $departmentManager->user->image ? asset($departmentManager->user->image) : asset('assets/img/user.jpg') }}" alt="Department Manager Image"
                             class="profile-image img-fluid rounded-circle" style="width: 150px; height:150px;">
-                    <h4 class="mt-3">{{ $employee->user->name }}</h4>
+                    <h4 class="mt-3">{{ $departmentManager->user->name }}</h4>
                 </div>
 
                 <div class="col-md-8">
@@ -39,27 +39,27 @@
                     <table class="table table-borderless" style="margin-bottom:50px;">
                         <tr>
                             <th><i class="fas fa-envelope text-primary me-2"></i> Email:</th>
-                            <td>{{ $employee->user->email ?? '-' }}</td>
+                            <td>{{ $departmentManager->user->email ?? '-' }}</td>
                         </tr>
 
                         <tr>
                             <th><i class="fas fa-phone text-primary me-2"></i> Phone:</th>
-                            <td>{{ $employee->user->phone ?? '-' }}</td>
+                            <td>{{ $departmentManager->user->phone ?? '-' }}</td>
                         </tr>
 
                         <tr>
                             <th><i class="fas fa-calendar-alt text-primary me-2"></i> Date of Birth:</th>
-                            <td>{{ $employee->user->date_of_birth }}</td>
+                            <td>{{ $departmentManager->user->date_of_birth }}</td>
                         </tr>
 
                         <tr>
                             <th><i class="fas fa-venus-mars text-primary me-2"></i> Gender:</th>
-                            <td>{{ $employee->user->gender }}</td>
+                            <td>{{ $departmentManager->user->gender }}</td>
                         </tr>
 
                         <tr>
                             <th><i class="fas fa-map-marker-alt text-primary me-2"></i> Address:</th>
-                            <td>{{ $employee->user->address ?? '-' }}</td>
+                            <td>{{ $departmentManager->user->address ?? '-' }}</td>
                         </tr>
                     </table>
 
@@ -71,17 +71,17 @@
                     <table class="table table-borderless" style="margin-bottom:50px;">
                         <tr>
                             <th><i class="fas fa-building text-primary me-2"></i> Department:</th>
-                            <td>{{ $employee->department->name  }}</td>
+                            <td>{{ $departmentManager->department->name  }}</td>
                         </tr>
 
                         <tr>
                             <th><i class="fas fa-briefcase text-primary me-2"></i> Job Title:</th>
-                            <td>{{ $employee->jobTitles->pluck('name')->implode(' , ') }}</td>
+                            <td>{{ $departmentManager->jobTitles->pluck('name')->implode(' , ') }}</td>
                         </tr>
 
                         <tr>
                             <th><i class="fas fa-calendar-alt text-primary me-2"></i> Hire Date:</th>
-                            <td>{{ $employee->hire_date ?? '-' }}</td>
+                            <td>{{ $departmentManager->hire_date ?? '-' }}</td>
                         </tr>
                     </table>
 
@@ -92,20 +92,20 @@
                     <table class="table table-borderless" style="margin-bottom:50px;">
                         <tr>
                             <th><i class="fas fa-clock text-primary me-2"></i> Work Start Time:</th>
-                            <td>{{ \Carbon\Carbon::parse($employee->work_start_time)->format('H:i') ?? '-' }}</td>
+                            <td>{{ \Carbon\Carbon::parse($departmentManager->work_start_time)->format('H:i') ?? '-' }}</td>
                         </tr>
-
+                    
                         <tr>
                             <th><i class="fas fa-clock text-primary me-2"></i> Work End Time:</th>
-                            <td>{{ \Carbon\Carbon::parse($employee->work_end_time)->format('H:i') ?? '-' }}</td>
+                            <td>{{ \Carbon\Carbon::parse($departmentManager->work_end_time)->format('H:i') ?? '-' }}</td>
                         </tr>
-
+                    
                         <tr>
                             <th><i class="fas fa-calendar-day text-primary me-2"></i> Working Days:</th>
                             <td>
-                                @if(!empty($employee->working_days) && is_array($employee->working_days))
+                                @if(!empty($departmentManager->working_days) && is_array($departmentManager->working_days))
                                     <ul style="padding-left:20px; margin:0;">
-                                        @foreach($employee->working_days as $day)
+                                        @foreach($departmentManager->working_days as $day)
                                             <li>{{ ucfirst($day) }}</li>
                                         @endforeach
                                     </ul>
@@ -125,7 +125,7 @@
                     <div class="mb-4 shadow-sm card rounded-3">
                         <div class="card-body" style="background-color: #ebeaea;">
                             <p class="mb-0" style="font-size: 15px; color: #333;">
-                                {{ $employee->short_biography ? $employee->short_biography : 'No biography available yet.' }}
+                                {{ $departmentManager->short_biography ? $departmentManager->short_biography : 'No biography available yet.' }}
                             </p>
                         </div>
                     </div>
@@ -133,7 +133,7 @@
             </div>
         </div>
         <div class="mb-3 d-flex justify-content-end">
-            <a href="{{ Route('view_employees') }}" class="btn btn-primary rounded-pill" style="font-weight: bold;">
+            <a href="{{ Route('view_departments_managers') }}" class="btn btn-primary rounded-pill" style="font-weight: bold;">
                 Back
             </a>
         </div>

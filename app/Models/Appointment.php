@@ -15,4 +15,17 @@ class Appointment extends Model{
         'status',
         'notes',
     ];
+
+    public function department(){
+        return $this->belongsTo(Department::class);
+    }
+
+    public function doctor(){
+        return $this->belongsTo(Doctor::class);
+    }
+
+
+    public function patient(){
+        return $this->belongsTo(Patient::class);
+    }
 }
