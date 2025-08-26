@@ -9,17 +9,16 @@ return new class extends Migration
     /**
      * Run the migrations.
      */
-    public function up(): void
-    {
+    public function up(): void{
         Schema::create('medications', function (Blueprint $table) {
             $table->id();
-            $table->string('name');
-            $table->foreignId('dosage_form_id')->constrained()->onDelete('cascade');
-            $table->string('strength');                // التركيز
-            $table->text('description')->nullable();
-            $table->string('image')->nullable();
-            $table->decimal('purchase_price', 8, 2)->nullable();
-            $table->decimal('selling_price', 8, 2)->nullable();
+            $table->foreignId('pharmacy_id')->constrained('pharmacy')->onDelete('cascade');
+            $table->string('name'); // اسم الدواء (تجاري أو عام)
+            $table->string('dosage_form');   // شكل  الدواء
+            $table->string('category')->nullable(); // الفئة (مضاد حيوي، مسكن...)
+            $table->decimal('selling_price', 8, 2)->nullable(); // السعر
+            $table->date('expiry_date')->nullable(); // تاريخ الانتهاء
+            $table->text('description')->nullable(); // وصف للدواء إن وجد
             $table->timestamps();
         });
     }

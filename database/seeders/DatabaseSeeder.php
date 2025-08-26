@@ -17,8 +17,8 @@ class DatabaseSeeder extends Seeder
         $this->call(RolesAndPermissionsSeeder::class);
         $this->call(ClinicInfoSeeder::class);
         $this->call(DepartmentSeeder::class);
-        $this->call(DosageFormSeeder::class);
         $this->call(JobTitlesSeeder::class);
+        $this->call(PharmacySeeder::class);
 
         $admin = User::create([
             'name' => 'Admin',

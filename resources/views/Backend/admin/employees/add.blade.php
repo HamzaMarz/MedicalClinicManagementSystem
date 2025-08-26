@@ -253,7 +253,7 @@
                                                     $all_days   = ['Saturday','Sunday','Monday','Tuesday','Wednesday','Thursday','Friday'];
                                                     $clinicDays = $clinic->work_days ?? [];
                                                 @endphp
-                                
+
                                                 <div class="col-6">
                                                     @foreach(array_slice($all_days, 0, 4) as $day)
                                                         <div class="form-check {{ in_array($day, $clinicDays) ? '' : 'text-muted' }}">
@@ -269,7 +269,7 @@
                                                         </div>
                                                     @endforeach
                                                 </div>
-                                
+
                                                 <div class="col-6">
                                                     @foreach(array_slice($all_days, 4) as $day)
                                                         <div class="form-check {{ in_array($day, $clinicDays) ? '' : 'text-muted' }}">
@@ -416,6 +416,14 @@
                     Swal.fire({
                         title: 'Error!',
                         text: 'The Password Does Not Match The Confirmation Password',
+                        icon: 'error',
+                        confirmButtonText: 'OK'
+                    });
+                    return;
+                }else if (work_start_time >= work_end_time){
+                    Swal.fire({
+                        title: 'Error!',
+                        text: 'The Timing Is Incorrect, Please Correct It',
                         icon: 'error',
                         confirmButtonText: 'OK'
                     });

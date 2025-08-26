@@ -208,7 +208,7 @@
                                                 <select name="work_end_time" id="work_end_time" class="form-control">
                                                     <option disabled hidden>Select End Time</option>
                                                     @php
-                                                        $savedEnd = $departmentManager->work_end_time ?? null; 
+                                                        $savedEnd = $departmentManager->work_end_time ?? null;
                                                     @endphp
                                                     @for ($time = $start->copy(); $time->lte($end); $time->addHour())
                                                         <option value="{{ $time->format('H:i:s') }}"
@@ -233,7 +233,7 @@
                                                         $clinicDays  = $clinic->work_days ?? []; // أيام العيادة
                                                         $savedDays   = $departmentManager->working_days ?? []; // الأيام المحفوظة للموظف
                                                     @endphp
-                                    
+
                                                     {{-- العمود الأول --}}
                                                     <div class="col-6">
                                                         @foreach($daysColumn1 as $day)
@@ -251,7 +251,7 @@
                                                             </div>
                                                         @endforeach
                                                     </div>
-                                    
+
                                                     {{-- العمود الثاني --}}
                                                     <div class="col-6">
                                                         @foreach($daysColumn2 as $day)
@@ -273,7 +273,7 @@
                                             </div>
                                         </div>
                                     </div>
-                                
+
                             </div>
                         </div>
                     </div>
@@ -311,7 +311,7 @@
 
                     {{-- Submit --}}
                     <div class="text-center" style="margin-top:20px;">
-                        <button type="submit" class="btn btn-primary submit-btn addBtn" style="text-transform:none !important;">
+                        <button type="submit" class="btn btn-primary submit-btn editBtn" style="text-transform:none !important;">
                             Edit Department Manager
                         </button>
                     </div>
@@ -331,7 +331,7 @@
         }
 
         $(document).ready(function () {
-            $('.addBtn').click(function (e) {
+            $('.editBtn').click(function (e) {
                 e.preventDefault();
 
                 let departmentManagerId = $('#departmentManager_id').val();

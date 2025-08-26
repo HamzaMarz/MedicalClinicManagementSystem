@@ -358,7 +358,7 @@
 
                     {{-- Submit --}}
                     <div class="text-center" style="margin-top:20px;">
-                        <button type="submit" class="btn btn-primary submit-btn addBtn" style="text-transform:none !important;">
+                        <button type="submit" class="btn btn-primary submit-btn editBtn" style="text-transform:none !important;">
                             Edit Employee
                         </button>
                     </div>
@@ -378,7 +378,7 @@
         }
 
         $(document).ready(function () {
-            $('.addBtn').click(function (e) {
+            $('.editBtn').click(function (e) {
                 e.preventDefault();
 
                 let employeeId = $('#employee_id').val();
@@ -454,6 +454,14 @@
                         confirmButtonText: 'OK'
                     });
                     return;
+                }else if (work_start_time >= work_end_time){
+                    Swal.fire({
+                        title: 'Error!',
+                        text: 'The Timing Is Incorrect, Please Correct It',
+                        icon: 'error',
+                        confirmButtonText: 'OK'
+                    });
+                    return;
                 }else{
                     $.ajax({
                         method: 'POST',
@@ -486,8 +494,8 @@
                     }
                 });
             }
-            });
         });
+    });
 
     </script>
 @endsection

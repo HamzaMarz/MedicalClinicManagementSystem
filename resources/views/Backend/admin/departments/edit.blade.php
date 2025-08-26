@@ -79,7 +79,7 @@
                     </div>
 
                     <div class="text-center" style="margin-top:20px;">
-                        <button type="submit" class="px-5 btn btn-primary submit-btn addBtn rounded-pill" style="text-transform: none !important;">
+                        <button type="submit" class="px-5 btn btn-primary submit-btn editBtn rounded-pill" style="text-transform: none !important;">
                             Edit Department
                         </button>
                     </div>
@@ -95,7 +95,7 @@
 @section('js')
     <script>
         $(document).ready(function () {
-            $('.addBtn').click(function (e) {
+            $('.editBtn').click(function (e) {
                 e.preventDefault();
 
                 let name = $('#name').val().trim();

@@ -285,7 +285,7 @@
                                         $daysColumn2 = ['Wednesday','Thursday','Friday'];
                                         $clinicDays  = $clinic->work_days ?? [];
                                     @endphp
-        
+
                                     {{-- العمود الأول --}}
                                     <div class="col-6">
                                         @foreach($daysColumn1 as $day)
@@ -302,7 +302,7 @@
                                             </div>
                                         @endforeach
                                     </div>
-        
+
                                     {{-- العمود الثاني --}}
                                     <div class="col-6">
                                         @foreach($daysColumn2 as $day)
@@ -445,6 +445,14 @@
                     Swal.fire({
                         title: 'Error!',
                         text: 'The Password Does Not Match The Confirmation Password',
+                        icon: 'error',
+                        confirmButtonText: 'OK'
+                    });
+                    return;
+                }else if (work_start_time >= work_end_time){
+                    Swal.fire({
+                        title: 'Error!',
+                        text: 'The Timing Is Incorrect, Please Correct It',
                         icon: 'error',
                         confirmButtonText: 'OK'
                     });

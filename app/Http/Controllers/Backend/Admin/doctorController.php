@@ -16,7 +16,7 @@ use App\Http\Controllers\Controller;
 use Illuminate\Support\Facades\Hash;
 
 class DoctorController extends Controller{
-    
+
     public function addDoctor(){
         $departments = Department::all();
         $clinic = ClinicInfo::firstOrFail();

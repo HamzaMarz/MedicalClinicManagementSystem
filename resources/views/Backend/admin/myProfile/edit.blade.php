@@ -134,7 +134,7 @@
                     </div>
 
                     <div class="text-center m-t-20">
-                        <button type="submit" class="btn btn-primary submit-btn addBtn" style="text-transform: none !important;">Edit Admin Profile</button>
+                        <button type="submit" class="btn btn-primary submit-btn editBtn" style="text-transform: none !important;">Edit Admin Profile</button>
                     </div>
                 </form>
             </div>
@@ -146,7 +146,7 @@
 @section('js')
     <script>
         $(document).ready(function () {
-            $('.addBtn').click(function (e) {
+            $('.editBtn').click(function (e) {
                 e.preventDefault();
 
                 let name = $('#name').val().trim();

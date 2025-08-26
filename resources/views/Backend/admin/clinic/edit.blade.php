@@ -95,7 +95,7 @@
             <div class="card-header">Work Schedule</div>
             <div class="card-body">
                 <div class="row">
-        
+
                     {{-- Work Start --}}
                     <div class="col-sm-6 mb-3">
                         <label>Work Start <span class="text-danger">*</span></label>
@@ -112,7 +112,7 @@
                             @endfor
                         </select>
                     </div>
-                    
+
                     {{-- Work End --}}
                     <div class="col-sm-6 mb-3">
                         <label>Work End <span class="text-danger">*</span></label>
@@ -129,7 +129,7 @@
                             @endfor
                         </select>
                     </div>
-        
+
                     {{-- Work Days --}}
                     <div class="col-sm-12 mt-3">
                         <label>Working Days <span class="text-danger">*</span></label>
@@ -137,11 +137,11 @@
                             @php
                                 $all_days   = ['Saturday','Sunday','Monday','Tuesday','Wednesday','Thursday','Friday'];
                                 $saved_days = $clinic->work_days ?? '[]';
-                    
+
                                 $first_col_days = array_slice($all_days, 0, 4);
-                                $second_col_days = array_slice($all_days, 4); 
+                                $second_col_days = array_slice($all_days, 4);
                             @endphp
-                    
+
                             <!-- العمود الأول -->
                             <div class="col-md-6">
                                 @foreach($first_col_days as $day)
@@ -158,7 +158,7 @@
                                     </div>
                                 @endforeach
                             </div>
-                    
+
                             <!-- العمود الثاني -->
                             <div class="col-md-6">
                                 @foreach($second_col_days as $day)
@@ -177,14 +177,14 @@
                             </div>
                         </div>
                     </div>
-        
+
                 </div>
             </div>
         </div>
-        
+
 
           {{-- 3) Short Bio  --}}
-          
+
           <div class="card">
             <div class="card-header">Description</div>
             <div class="card-body">
@@ -201,7 +201,7 @@
 
           {{-- Submit --}}
           <div class="text-center m-t-20" style="margin-top:20px;">
-            <button type="submit" class="btn btn-primary submit-btn addBtn" style="text-transform:none !important;">Edit Profile Clinic</button>
+            <button type="submit" class="btn btn-primary submit-btn editBtn" style="text-transform:none !important;">Edit Profile Clinic</button>
           </div>
 
         </form>
@@ -226,7 +226,7 @@
 
   $(document).ready(function () {
 
-    $('.addBtn').on('click', function (e) {
+    $('.editBtn').on('click', function (e) {
       e.preventDefault();
 
       const name = $('#name').val().trim();
@@ -255,9 +255,9 @@
 
       const formData = new FormData();
       formData.append('name', name);
-      
+
       formData.append('email', email);
-      
+
       formData.append('phone', phone);
       formData.append('location', location);
       formData.append('work_start', work_start);
@@ -285,7 +285,7 @@
               icon: 'success',
               confirmButtonText: 'OK'
             }).then(() => window.location.href = '/admin/clinic/profile');
-          } 
+          }
         },
       });
     });

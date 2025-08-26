@@ -7,6 +7,7 @@ use App\Http\Controllers\Backend\Admin\ClinicController;
 use App\Http\Controllers\Backend\Admin\DoctorController;
 use App\Http\Controllers\Backend\Admin\PatientController;
 use App\Http\Controllers\Backend\Admin\EmployeeController;
+use App\Http\Controllers\Backend\Admin\PharmacyController;
 use App\Http\Controllers\Backend\Admin\DashboardController;
 use App\Http\Controllers\Backend\Admin\ClinicInfoController;
 use App\Http\Controllers\Backend\Admin\DepartmentController;
@@ -42,12 +43,12 @@ Route::prefix('admin')->middleware(['auth', 'verified', 'role:admin'])->group(fu
     Route::get('/edit/clinic/profile' , [ClinicInfoController::class , 'editClinicProfile'])->name('edit_clinic_profile');
     Route::put('/update/clinic/profile' , [ClinicInfoController::class , 'updateClinicProfile'])->name('update_clinic_profile');
 
+
     //Dashboard
     Route::get('/dashboard', [DashboardController::class, 'adminDashboard'])->name('dashboard');
     Route::get('/my_profile' , [DashboardController::class , 'myProfile'])->name('my_profile');
     Route::get('/edit/profile' , [DashboardController::class , 'editProfile'])->name('edit_profile');
     Route::put('/update/profile' , [DashboardController::class , 'updateProfile'])->name('update_profile');
-
 
 
     //Department
@@ -66,7 +67,6 @@ Route::prefix('admin')->middleware(['auth', 'verified', 'role:admin'])->group(fu
     Route::delete('/delete/department-manager/{id}' ,[DepartmentController::class , 'deleteDepartmentManager'])->name('delete_department_manager');
 
 
-
     //Employee
     Route::get('/add/employee' ,[EmployeeController::class , 'addEmployee'])->name('add_employee');
     Route::post('/store/employee',[EmployeeController::class , 'storeEmployee'])->name('store_employee');
@@ -76,7 +76,6 @@ Route::prefix('admin')->middleware(['auth', 'verified', 'role:admin'])->group(fu
     Route::get('/edit/employee/{id}' ,[EmployeeController::class , 'editEmployee'])->name('edit_employee');
     Route::put('/update/employee/{id}' ,[EmployeeController::class , 'updateEmployee'])->name('update_employee');
     Route::delete('/delete/employee/{id}' ,[EmployeeController::class , 'deleteEmployee'])->name('delete_employee');
-
 
 
     //Doctor
@@ -92,9 +91,6 @@ Route::prefix('admin')->middleware(['auth', 'verified', 'role:admin'])->group(fu
     Route::get('/search/doctor/schedules',[DoctorController::class ,  'searchDoctorSchedules']);
     Route::post('/search/doctor/schedules',[DoctorController::class , 'searchDoctchedules'])->name('search_doctor_schedules');
 
-    // Route::get('/get-clinic-info/{id}', [DoctorController::class, 'getClinicInfo']);  // بحضر لي أوقات العيادة في فورم الطبيب عشان أختار أوقات الطبيب بناء ع وقت العيادة
-    // Route::get('/clinic-working-days/{id}', [DoctorController::class, 'getWorkingDays']);    // برجع الأيام المحددة
-
 
     //Patient
     Route::get('/add/patient' ,[PatientController::class , 'addPatient'])->name('add_patient');
@@ -106,11 +102,9 @@ Route::prefix('admin')->middleware(['auth', 'verified', 'role:admin'])->group(fu
     Route::put('/update/patient/{id}' ,[PatientController::class , 'updatePatient'])->name('update_patient');
     Route::delete('/delete/patient/{id}' ,[PatientController::class , 'deletePatient'])->name('delete_patient');
 
-    
     Route::get('/get-doctors-by-department/{department_id}', [PatientController::class, 'getDoctorsByDepartment']);
     Route::get('/get-doctor-info/{id}', [PatientController::class, 'getDoctorInfo']);
     Route::get('/doctor-working-days/{id}', [PatientController::class, 'getWorkingDays']);
-
 
 
     //Appointment
@@ -124,10 +118,16 @@ Route::prefix('admin')->middleware(['auth', 'verified', 'role:admin'])->group(fu
     Route::delete('/delete/appointment/{id}' ,[AppointmentController::class ,'deleteAppointment'])->name('delete_appointment');
 
 
+    //Pharmacy
+    Route::get('/pharmacy/profile', [PharmacyController::class, 'pharmacyProfile'])->name('pharmacy_profile');
+    Route::get('/pharmacy/view', [PharmacyController::class, 'pharmacyView'])->name('pharmacy_view');
+
+
     //Medication
     Route::get('/add/medication' ,[MedicationController::class , 'addMedication'])->name('add_medication');
     Route::post('/store/medication',[MedicationController::class , 'storeMedication'])->name('store_medication');
     Route::get('/view/medications' ,[MedicationController::class , 'viewMedications'])->name('view_medications');
+    Route::get('/search/medications',[MedicationController::class , 'searchMedications'])->name('search_medications');
     Route::get('/description/medication/{id}',[MedicationController::class , 'descriptionMedication'])->name('description_medication');
     Route::get('/edit/medication/{id}' ,[MedicationController::class , 'editMedication'])->name('edit_medication');
     Route::put('/update/medication/{id}' ,[MedicationController::class , 'updateMedication'])->name('update_medication');

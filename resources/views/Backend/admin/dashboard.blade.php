@@ -77,6 +77,7 @@
                     </div> --}}
 
                 </div>
+                {{-- الرسوم البيانية يتم التحكم فيها باستخدام الجافا سكريبت --}}
 				<div class="row">
 					<div class="col-12 col-md-6 col-lg-6 col-xl-6">
 						<div class="card">

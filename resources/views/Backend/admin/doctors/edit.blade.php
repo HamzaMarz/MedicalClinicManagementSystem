@@ -267,7 +267,7 @@
                                         $clinicDays  = $clinic->work_days ?? [];                   // أيام العيادة
                                         $savedDays   = $employee->working_days ?? [];              // الأيام المحفوظة للموظف
                                     @endphp
-                    
+
                                     {{-- العمود الأول --}}
                                     <div class="col-6">
                                         @foreach($daysColumn1 as $day)
@@ -285,7 +285,7 @@
                                             </div>
                                         @endforeach
                                     </div>
-                    
+
                                     {{-- العمود الثاني --}}
                                     <div class="col-6">
                                         @foreach($daysColumn2 as $day)
@@ -346,7 +346,7 @@
 
           {{-- Submit --}}
           <div class="text-center m-t-20" style="margin-top:20px;">
-            <button type="submit" class="btn btn-primary submit-btn addBtn" style="text-transform:none !important;">Edit Doctor</button>
+            <button type="submit" class="btn btn-primary submit-btn editBtn" style="text-transform:none !important;">Edit Doctor</button>
           </div>
 
         </form>
@@ -371,115 +371,116 @@
 
   $(document).ready(function () {
 
-    $('.addBtn').on('click', function (e) {
+    $('.editBtn').on('click', function (e) {
       e.preventDefault();
 
-      const name = $('#name').val().trim();
-      const date_of_birth = $('#date_of_birth').val().trim();
-      const department_id = $('#department_id').val();
-      const email = $('#email').val();
-      const password = $('#password').val();
-      const confirm_password = $('#confirm_password').val();
-      const phone = $('#phone').val().trim();
-      const address = $('#address').val().trim();
-      const work_start_time = $('#work_start_time').val();
-      const work_end_time = $('#work_end_time').val();
-      const gender = $('input[name="gender"]:checked').val();
-      const short_biography = $('#short_biography').val().trim();
-      const status = $('input[name="status"]:checked').val();
-      const image = document.querySelector('#image').files[0];
-      const qualification = $('#qualification').val().trim();
-      const experience_years = $('#experience_years').val();
+        const name = $('#name').val() ? $('#name').val().trim() : '';
+        const date_of_birth = $('#date_of_birth').val().trim();
+        const department_id = $('#department_id').val();
+        const email = $('#email').val();
+        const password = $('#password').val();
+        const confirm_password = $('#confirm_password').val();
+        const phone = $('#phone').val() ? $('#phone').val().trim() : '';
+        const address = $('#address').val() ? $('#address').val().trim() : '';
+        const work_start_time = $('#work_start_time').val();
+        const work_end_time = $('#work_end_time').val();
+        const gender = $('input[name="gender"]:checked').val();
+        const short_biography = $('#short_biography').val() ? $('#short_biography').val().trim() : '';
+        const status = $('input[name="status"]:checked').val();
+        const image = document.querySelector('#image').files[0];
+        const qualification   = $('#qualification').val() ? $('#qualification').val().trim() : '';
+        const experience_years = $('#experience_years').val();
 
-      let workingDays = [];
-      $('input[name="working_days[]"]:checked').each(function () {
-        workingDays.push($(this).val());
-      });
-
-      if (!name || !date_of_birth || !department_id || !email || !phone || !address || !isValidSelectValue('qualification') || !experience_years || !gender || !isValidSelectValue('work_start_time') || !isValidSelectValue('work_end_time') ||
-          workingDays.length === 0) {
-        Swal.fire({
-          title: 'Error!',
-          text: 'Please Enter All Required Fields',
-          icon: 'error',
-          confirmButtonText: 'OK'
+        console.log(image);
+        let workingDays = [];
+        $('input[name="working_days[]"]:checked').each(function () {
+            workingDays.push($(this).val());
         });
-        return;
-      }
 
-      if (password && password !== confirm_password) {
-        Swal.fire({
-          title: 'Error!',
-          text: 'Password confirmation does not match',
-          icon: 'error',
-          confirmButtonText: 'OK'
-        });
-        return;
-      }
 
-      const formData = new FormData();
-      formData.append('name', name);
-      formData.append('date_of_birth', date_of_birth);
-      formData.append('department_id', department_id);
-      formData.append('email', email);
-      formData.append('password', password);
-      formData.append('confirm_password', confirm_password);
-      formData.append('phone', phone);
-      formData.append('address', address);
-      formData.append('work_start_time', work_start_time);
-      formData.append('work_end_time', work_end_time);
-      formData.append('qualification', qualification);
-      formData.append('experience_years', experience_years);
-      formData.append('gender', gender);
-      formData.append('short_biography', short_biography);
-      formData.append('status', status);
-      if (image) formData.append('image', image);
-      workingDays.forEach(d => formData.append('working_days[]', d));
+        const formData = new FormData();
+        formData.append('name', name);
+        formData.append('date_of_birth', date_of_birth);
+        formData.append('department_id', department_id);
+        formData.append('email', email);
+        formData.append('password', password);
+        formData.append('confirm_password', confirm_password);
+        formData.append('phone', phone);
+        formData.append('address', address);
+        formData.append('work_start_time', work_start_time);
+        formData.append('work_end_time', work_end_time);
+        formData.append('qualification', qualification);
+        formData.append('experience_years', experience_years);
+        formData.append('gender', gender);
+        formData.append('short_biography', short_biography);
+        formData.append('status', status);
+        if (image) formData.append('image', image);
+        workingDays.forEach(d => formData.append('working_days[]', d));
 
-      $.ajax({
-        type: 'POST',
-        url: "{{ route('update_doctor', ['id' => $doctor->id]) }}",
-        data: formData,
-        processData: false,
-        contentType: false,
-        headers: {
-          'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content'),
-          'X-HTTP-Method-Override': 'PUT'
-        },
-        success: function (response) {
-          if (response.data == 0) {
+
+        if(!name || !date_of_birth || !department_id || !email || !phone || !address || !isValidSelectValue('qualification') || !experience_years || !gender || !isValidSelectValue('work_start_time') || !isValidSelectValue('work_end_time') ||
+            workingDays.length === 0) {
             Swal.fire({
-              title: 'Error!',
-              text: 'This Doctor Already Exists',
-              icon: 'error',
-              confirmButtonText: 'OK'
-            });
-          } else if (response.data == 1) {
-            Swal.fire({
-              title: 'Success',
-              text: 'Doctor Has Been Updated Successfully',
-              icon: 'success',
-              confirmButtonText: 'OK'
-            }).then(() => window.location.href = '/admin/view/doctors');
-          } else {
-            Swal.fire({
-              title: 'Notice',
-              text: 'Unexpected response. Please try again.',
-              icon: 'info',
-              confirmButtonText: 'OK'
-            });
-          }
-        },
-        error: function(xhr){
-          Swal.fire({
             title: 'Error!',
-            text: (xhr.responseJSON && xhr.responseJSON.message) ? xhr.responseJSON.message : 'Request failed',
+            text: 'Please Enter All Required Fields',
             icon: 'error',
             confirmButtonText: 'OK'
-          });
-        }
-      });
+            });
+            return;
+        }else if (password && password !== confirm_password) {
+            Swal.fire({
+            title: 'Error!',
+            text: 'Password confirmation does not match',
+            icon: 'error',
+            confirmButtonText: 'OK'
+            });
+            return;
+        }else if (work_start_time >= work_end_time){
+            Swal.fire({
+                title: 'Error!',
+                text: 'The Timing Is Incorrect, Please Correct It',
+                icon: 'error',
+                confirmButtonText: 'OK'
+            });
+                return;
+            }else{
+                $.ajax({
+                    type: 'POST',
+                    url: "{{ route('update_doctor', ['id' => $doctor->id]) }}",
+                    data: formData,
+                    processData: false,
+                    contentType: false,
+                    headers: {
+                        'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content'),
+                        'X-HTTP-Method-Override': 'PUT'
+                        },
+                    success: function (response) {
+                        if (response.data == 0) {
+                            Swal.fire({
+                            title: 'Error!',
+                            text: 'This Doctor Already Exists',
+                            icon: 'error',
+                            confirmButtonText: 'OK'
+                            });
+                        } else if (response.data == 1) {
+                            Swal.fire({
+                            title: 'Success',
+                            text: 'Doctor Has Been Updated Successfully',
+                            icon: 'success',
+                            confirmButtonText: 'OK'
+                            }).then(() => window.location.href = '/admin/view/doctors');
+                        } else {
+                            Swal.fire({
+                            title: 'Notice',
+                            text: 'Unexpected response. Please try again.',
+                            icon: 'info',
+                            confirmButtonText: 'OK'
+                            });
+                        }
+                    },
+                });
+            }
+        });
     });
-  });
 </script>
 @endsection

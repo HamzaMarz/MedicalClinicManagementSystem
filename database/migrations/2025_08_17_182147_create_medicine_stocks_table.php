@@ -16,10 +16,7 @@ return new class extends Migration
             $table->foreignId('medication_id')->constrained('medications')->onDelete('cascade');
             $table->integer('quantity');
             $table->string('batch_number');            // رقم الدفعة
-            $table->date('manufacture_date');             // تاريخ الانتاج
-            $table->date('expiry_date');                // تاريخ الانتهاء
             $table->text('description')->nullable();
-            $table->foreignId('clinic_id')->constrained('clinics')->onDelete('cascade');
             $table->timestamps();
         });
     }
