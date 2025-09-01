@@ -21,4 +21,9 @@ class Pharmacy extends Model{
     protected $casts = [
         'working_days' => 'array',
     ];
+
+
+    public function medications(){
+        return $this->belongsToMany(Medication::class, 'medication_pharmacy')->withPivot('quantity')->withTimestamps();
+    }
 }

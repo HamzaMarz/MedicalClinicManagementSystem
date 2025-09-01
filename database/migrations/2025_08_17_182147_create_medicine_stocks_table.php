@@ -15,9 +15,11 @@ return new class extends Migration
             $table->id();
             $table->foreignId('medication_id')->constrained('medications')->onDelete('cascade');
             $table->integer('quantity');
+            $table->integer('remaining_quantity');
             $table->string('batch_number');            // رقم الدفعة
             $table->text('description')->nullable();
             $table->timestamps();
+            $table->softDeletes();
         });
     }
 

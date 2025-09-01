@@ -39,11 +39,12 @@ class DoctorController extends Controller{
             return response()->json(['data' => 0]);
         }else{
             if ($request->hasFile('image')) {
-                $file = $request->file('image');
-                $imageName = 'doctors/' . time() . '_' . $file->getClientOriginalName();
-                $file->move(public_path('doctors'), $imageName);
+                    $file = $request->file('image');
+               $imageName = time() . '_' . $file->getClientOriginalName();
+                    $file->move(public_path('assets/img/doctors'), $imageName);
+                $imagePath = 'assets/img/doctors/' . $imageName;
             } else {
-                $imageName = null;
+                $imagePath = null;
             }
 
             $user = User::create([
@@ -52,7 +53,7 @@ class DoctorController extends Controller{
                 'password' => Hash::make($request->password),
                 'phone' => $request->phone,
                 'address' => $request->address,
-                'image' => $imageName,
+                'image' => $imagePath,
                 'date_of_birth' => $request->date_of_birth,
                 'gender' => $request->gender,
             ]);
@@ -192,11 +193,12 @@ class DoctorController extends Controller{
         if (User::where('email', $request->email)->where('id', '!=', $currentUserId)->exists()) {
             return response()->json(['data' => 0]);
         }else{
-            $imageName = $user->image;
+            $imagePath = $user->image;
             if ($request->hasFile('image')) {
                 $file = $request->file('image');
-                $imageName = 'doctors/' . time() . '_' . $file->getClientOriginalName();
-                $file->move(public_path('doctors'), $imageName);
+                $imageName = time() . '_' . $file->getClientOriginalName();
+                $file->move(public_path('assets/img/doctors'), $imageName);
+                $imagePath = 'assets/img/doctors/' . $imageName;
             }
 
 
@@ -210,7 +212,7 @@ class DoctorController extends Controller{
                 'email' => $request->email ,
                 'phone' => $request->phone,
                 'password' => $password,
-                'image' => $imageName,
+                'image' => $imagePath,
                 'address' => $request->address,
                 'date_of_birth' => $request->date_of_birth,
                 'gender' => $request->gender,

@@ -12,7 +12,6 @@ return new class extends Migration
     public function up(): void{
         Schema::create('medications', function (Blueprint $table) {
             $table->id();
-            $table->foreignId('pharmacy_id')->constrained('pharmacy')->onDelete('cascade');
             $table->string('name'); // اسم الدواء (تجاري أو عام)
             $table->string('dosage_form');   // شكل  الدواء
             $table->string('category')->nullable(); // الفئة (مضاد حيوي، مسكن...)
@@ -20,6 +19,7 @@ return new class extends Migration
             $table->date('expiry_date')->nullable(); // تاريخ الانتهاء
             $table->text('description')->nullable(); // وصف للدواء إن وجد
             $table->timestamps();
+            $table->softDeletes();
         });
     }
 

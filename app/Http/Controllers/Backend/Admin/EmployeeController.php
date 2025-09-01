@@ -38,10 +38,11 @@ class EmployeeController extends Controller{
         }else{
             if ($request->hasFile('image')) {
                 $file = $request->file('image');
-                $imageName = 'employees/' . time() . '_' . $file->getClientOriginalName();
-                $file->move(public_path('employees'), $imageName);
+                $imageName = time() . '_' . $file->getClientOriginalName();
+                $file->move(public_path('assets/img/employees'), $imageName);
+                $imagePath = 'assets/img/employees/' . $imageName;
             } else {
-                $imageName = null;
+                $imagePath = null;
             }
 
             $role = (is_array($request->job_title_id) && in_array(2, $request->job_title_id)) ? 'doctor' : 'employee';
@@ -52,7 +53,7 @@ class EmployeeController extends Controller{
                 'password' => Hash::make($request->password),
                 'phone' => $request->phone,
                 'address' => $request->filled('address') ? $request->address : null,
-                'image' => $imageName,
+                'image' => $imagePath,
                 'date_of_birth' => $request->date_of_birth,
                 'gender' => $request->gender,
             ]);
@@ -191,69 +192,69 @@ class EmployeeController extends Controller{
         if (User::where('email', $request->email)->where('id', '!=', $user->id)->exists()) {
             return response()->json(['data' => 0]);
         }else{
-            // ✅ معالجة الصورة
-        $imageName = $user->image;
-        if ($request->hasFile('image')) {
-            $file = $request->file('image');
-            $imageName = 'employees/' . time() . '_' . $file->getClientOriginalName();
-            $file->move(public_path('employees'), $imageName);
-        }
-
-        // ✅ تحديث الباسوورد فقط إذا أدخل جديد
-        $password = $user->password;
-        if ($request->filled('password')) {
-            $password = Hash::make($request->password);
-        }
-
-
-        $user->update([
-            'name'         => $request->name,
-            'email'        => $request->email,
-            'password'     => $password,
-            'phone'        => $request->phone,
-            'address'      => $request->filled('address') ? $request->address : null,
-            'image'        => $imageName,
-            'date_of_birth'=> $request->date_of_birth,
-            'gender'       => $request->gender,
-        ]);
-
-        // ✅ تحديث بيانات الموظف
-        $employee->update([
-            'department_id'   => $request->department_id,
-            'work_start_time' => $request->work_start_time,
-            'work_end_time'   => $request->work_end_time,
-            'working_days'    => $request->working_days,
-            'status'          => $request->status,
-            'short_biography' => $request->short_biography,
-        ]);
-
-        // ✅ تحديث الوظائف (Job Titles)
-        EmployeeJobTitle::where('employee_id', $employee->id)->delete();
-
-        if ($request->has('job_title_id')) {
-            foreach ($request->job_title_id as $jobId) {
-                EmployeeJobTitle::create([
-                    'employee_id'  => $employee->id,
-                    'job_title_id' => $jobId,
-                ]);
+            $imagePath = $user->image;
+            if ($request->hasFile('image')) {
+                $file = $request->file('image');
+                $imageName = time() . '_' . $file->getClientOriginalName();
+                $file->move(public_path('assets/img/employees'), $imageName);
+                $imagePath = 'assets/img/employees/' . $imageName;
             }
-        }
 
-        // ✅ إذا كان الموظف دكتور (job_title_id = 2) أضف لسجل الأطباء
-        if ($request->has('job_title_id') && in_array(2, $request->job_title_id)) {
-            if (!$employee->doctor) {
-                Doctor::create([
-                    'employee_id' => $employee->id,
-                ]);
+            // ✅ تحديث الباسوورد فقط إذا أدخل جديد
+            $password = $user->password;
+            if ($request->filled('password')) {
+                $password = Hash::make($request->password);
             }
-        } else {
-            // لو شلنا التخصص من الدكتور نحذف الجدول المرتبط
-            if ($employee->doctor) {
-                $employee->doctor->delete();
-            }
-        }
 
-        return response()->json(['data' => 1]);
+
+            $user->update([
+                'name'         => $request->name,
+                'email'        => $request->email,
+                'password'     => $password,
+                'phone'        => $request->phone,
+                'address'      => $request->filled('address') ? $request->address : null,
+                'image'        => $imagePath,
+                'date_of_birth'=> $request->date_of_birth,
+                'gender'       => $request->gender,
+            ]);
+
+            // ✅ تحديث بيانات الموظف
+            $employee->update([
+                'department_id'   => $request->department_id,
+                'work_start_time' => $request->work_start_time,
+                'work_end_time'   => $request->work_end_time,
+                'working_days'    => $request->working_days,
+                'status'          => $request->status,
+                'short_biography' => $request->short_biography,
+            ]);
+
+            // ✅ تحديث الوظائف (Job Titles)
+            EmployeeJobTitle::where('employee_id', $employee->id)->delete();
+
+            if ($request->has('job_title_id')) {
+                foreach ($request->job_title_id as $jobId) {
+                    EmployeeJobTitle::create([
+                        'employee_id'  => $employee->id,
+                        'job_title_id' => $jobId,
+                    ]);
+                }
+            }
+
+            // ✅ إذا كان الموظف دكتور (job_title_id = 2) أضف لسجل الأطباء
+            if ($request->has('job_title_id') && in_array(2, $request->job_title_id)) {
+                if (!$employee->doctor) {
+                    Doctor::create([
+                        'employee_id' => $employee->id,
+                    ]);
+                }
+            } else {
+                // لو شلنا التخصص من الدكتور نحذف الجدول المرتبط
+                if ($employee->doctor) {
+                    $employee->doctor->delete();
+                }
+            }
+
+            return response()->json(['data' => 1]);
         }
     }
 

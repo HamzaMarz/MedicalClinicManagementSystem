@@ -1,4 +1,4 @@
-@extends('Backend.master')
+@extends('Backend.admin.master')
 
 @section('title' , 'View Medications')
 
@@ -36,8 +36,12 @@
                 <h4 class="page-title">View Medications</h4>
             </div>
             <div class="text-right col-sm-8 col-9 m-b-20">
-                <a href="{{ Route('add_medication') }}" class="float-right btn btn-primary btn-rounded" style="font-weight: bold;">
+                <a href="{{ Route('add_medication') }}" class="float-right ml-2 btn btn-primary btn-rounded" style="font-weight: bold;">
                     <i class="fa fa-plus"></i> Add Medication
+                </a>
+
+                <a href="{{ Route('view_trashed_medications') }}" class="float-right btn btn-danger btn-rounded" style="font-weight: bold;">
+                    <i class="fa fa-trash"></i> Expired Medications
                 </a>
             </div>
         </div>
@@ -98,11 +102,11 @@
     // ✅ حذف دواء
     $(document).on('click', '.delete-medication', function () {
         let medicationId = $(this).data('id');
-        let url = `/admin/delete/medication/${medicationId}`;
+        let url = `/admin/medication/${medicationId}`;
 
         Swal.fire({
             title: 'Are you sure?',
-            text: "You won't be able to revert this!",
+            text: "It will be moved to the trash!",
             imageUrl: 'https://img.icons8.com/ios-filled/50/fa314a/delete-trash.png',
             imageWidth: 60,
             imageHeight: 60,

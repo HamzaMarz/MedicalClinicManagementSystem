@@ -130,4 +130,92 @@ class MedicationController extends Controller{
         $medication->delete();
         return response()->json(['success' => true]);
     }
+
+
+
+
+
+    public function viewTrashedMedications(){
+        $medications = Medication::onlyTrashed()->paginate(12);
+        return view('Backend.admin.medications.trashed.viewTrashed', compact('medications'));
+    }
+
+
+
+
+
+    public function searchTrashedMedications(Request $request){
+        $keyword = trim((string) $request->input('keyword', ''));
+        $filter  = $request->input('filter', '');
+
+        $medications = Medication::onlyTrashed();
+
+        if ($keyword !== '') {
+            switch ($filter) {
+                case 'name':
+                    $medications->where('name', 'like', "{$keyword}%");
+                    break;
+
+                case 'dosage_form':
+                    $medications->where('dosage_form', 'like', "{$keyword}%");
+                    break;
+
+                case 'category':
+                    $medications->where('category', 'like', "{$keyword}%");
+                    break;
+
+                case 'status':
+                    $medications->where('status', 'like', "{$keyword}%");
+                    break;
+            }
+        }
+
+        $medications = $medications->orderBy('id')->paginate(12);
+
+        $view       = view('Backend.admin.medications.trashed.searchTrashedMedication', compact('medications'))->render();
+        $pagination = $medications->total() > 12 ? $medications->links('pagination::bootstrap-4')->render() : '';
+
+        return response()->json([
+            'html'       => $view,
+            'pagination' => $pagination,
+            'count'      => $medications->total(),
+            'searching'  => $keyword !== '',
+        ]);
+    }
+
+
+
+
+
+    public function restoreMedication($id){
+        $medication = Medication::onlyTrashed()->findOrFail($id);
+        $medication->restore();
+        return response()->json(['success' => true]);
+    }
+
+
+
+
+    public function forceDeleteMedication($id){
+        $medication = Medication::onlyTrashed()->findOrFail($id);
+        $medication->stocks()->forceDelete();
+        $medication->pharmacies()->forceDelete();
+        $medication->forceDelete();
+        return response()->json(['success' => true]);
+    }
+
+
+
+
+
+    public function forceDeleteAllMedications(){
+        $medications = Medication::onlyTrashed()->get();
+        foreach ($medications as $medication) {
+            $medication->stocks()->delete();
+            $medication->pharmacies()->delete();
+            $medication->forceDelete();
+        }
+
+        return response()->json(['success' => true]);
+    }
 }

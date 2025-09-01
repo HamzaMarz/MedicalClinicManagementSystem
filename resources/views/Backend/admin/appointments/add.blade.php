@@ -1,4 +1,4 @@
-@extends('Backend.master')
+@extends('Backend.admin.master')
 
 @section('title' , 'Add New Appointment')
 
@@ -166,7 +166,7 @@
                 let doctor_id        = $('#doctor_id').val();
                 let appointment_time = $('#appointment_time').val();
                 let appointment_day  = $('#appointment_day').val();
-                let notes            = $('#notes').val().trim();
+                let notes            = $('#notes').val() ? $('#notes').val().trim() : '';
 
                 // ✅ FormData
                 let formData = new FormData();
@@ -177,43 +177,51 @@
                 formData.append('appointment_day', appointment_day);
                 formData.append('notes', notes);
 
-                if (!isValidSelectValue('patient_id') || !isValidSelectValue('department_id') || !isValidSelectValue('doctor_id') || !isValidSelectValue('appointment_time') || !isValidSelectValue('appointment_day')) {
-                    Swal.fire({
-                        title: 'Error!',
-                        text: 'Please Enter All Required Fields',
-                        icon: 'error',
-                        confirmButtonText: 'OK'
-                    });
+                // ✅ Validation قبل الإرسال
+                if (!isValidSelectValue('patient_id') || !isValidSelectValue('department_id') ||
+                    !isValidSelectValue('doctor_id') || !isValidSelectValue('appointment_time') ||
+                    !isValidSelectValue('appointment_day'))
+                {
+                    Swal.fire('Error!', 'Please Enter All Required Fields', 'error');
                     return;
-                } else {
-                    $.ajax({
-                        method: 'POST',
-                        url: "{{ route('store_appointment') }}",
-                        data: formData,
-                        processData: false,
-                        contentType: false,
-                        headers: {
-                            'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
-                        },
-                        success: function (response) {
-                            if (response.data == 0) {
-                                Swal.fire('Error!', 'The Appointment Has Already Been Booked', 'error');
-                            } else if (response.data == 1) {
-                                Swal.fire('Success', 'Appointment Has Been Added Successfully', 'success')
-                                    .then(() => {
-                                        window.location.href = '/admin/add/appointment';
-                                    });
-                            }
-                        }
-                    });
                 }
+
+                // ✅ Ajax Request
+                $.ajax({
+                    method: 'POST',
+                    url: "{{ route('store_appointment') }}",
+                    data: formData,
+                    processData: false,
+                    contentType: false,
+                    headers: {
+                        'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
+                    },
+                    success: function (response) {
+                        if (response.data == 0) {
+                            Swal.fire('Error!', 'This patient already has an appointment at this time', 'error');
+                        }
+                        else if (response.data == 1) {
+                            Swal.fire('Warning', 'This appointment slot is already booked. Please choose another time', 'warning');
+                        }
+                        else if (response.data == 2) {
+                            Swal.fire('Error!', 'This appointment time has already passed. Please select another time', 'error');
+                        }
+                        else if (response.data == 3) {
+                            Swal.fire('Success', 'Appointment has been added successfully', 'success')
+                                .then(() => {
+                                    window.location.href = '/admin/add/appointment';
+                                });
+                        }
+                        else {
+                            Swal.fire('Notice', 'Unexpected response, please try again', 'info');
+                        }
+                    }
+                });
             });
 
             // عند اختيار القسم → جلب الأطباء
             $('#department_id').on('change', function () {
-                var departmentId = $(this).val();
-
-                console.log(departmentId);
+                let departmentId = $(this).val();
 
                 if (departmentId) {
                     $.ajax({
@@ -222,7 +230,6 @@
                         success: function (data) {
                             let doctorSelect = $('#doctor_id');
                             doctorSelect.empty().append('<option value="" disabled selected hidden>Select Doctor</option>');
-
                             $.each(data, function (key, doctor) {
                                 doctorSelect.append('<option value="' + doctor.id + '">' + doctor.name + '</option>');
                             });
@@ -233,9 +240,7 @@
 
             // عند اختيار الطبيب → جلب أوقات العمل + الأيام
             $('#doctor_id').on('change', function () {
-                var doctorId = $(this).val();
-
-                console.log(doctorId);
+                let doctorId = $(this).val();
 
                 if (doctorId) {
                     // 1) أوقات العمل
@@ -245,9 +250,6 @@
                         success: function (data) {
                             let startParts = data.work_start_time.split(':');
                             let endParts   = data.work_end_time.split(':');
-
-                            console.log(startParts);
-                            console.log(endParts);
 
                             let startHour   = parseInt(startParts[0]);
                             let startMinute = parseInt(startParts[1]);
@@ -280,7 +282,6 @@
                         success: function (doctorDays) {
                             let daySelect = $('#appointment_day');
                             daySelect.empty().append('<option disabled selected hidden>Select Day</option>');
-
                             doctorDays.forEach(function(day) {
                                 daySelect.append('<option value="' + day + '">' + day + '</option>');
                             });

@@ -23,7 +23,20 @@ class AppointmentController extends Controller{
 
     public function storeAppointment(Request $request){
         $selectedDay = $request->appointment_day;
-        $appointmentDate = Carbon::parse("next $selectedDay")->toDateString();
+        $selectedTime = $request->appointment_time;
+
+        $appointmentDate = Carbon::parse("this $selectedDay");
+
+        if($appointmentDate->isToday()) {
+            $selectedDateTime = Carbon::parse($appointmentDate->toDateString() . ' ' . $selectedTime);
+            if($selectedDateTime->lt(Carbon::now())) {
+                return response()->json(['data' => 2]);
+            }
+        }elseif($appointmentDate->isPast()) {
+            $appointmentDate = Carbon::parse("next $selectedDay");
+        }
+
+        $appointmentDate = $appointmentDate->toDateString();
 
         $exists = Appointment::where('patient_id', $request->patient_id)
             ->where('doctor_id', $request->doctor_id)
@@ -33,22 +46,34 @@ class AppointmentController extends Controller{
             ->exists();
 
         if ($exists) {
-            return response()->json(['data' => 0]);
-         }else{
-
-            Appointment::create([
-                'patient_id' => $request->patient_id,
-                'doctor_id' => $request->doctor_id,
-                'department_id'  => $request->department_id,
-                'date' => $appointmentDate,
-                'time' => $request->appointment_time,
-                'notes' => $request->notes,
-                'status' => 'Pending',
-            ]);
-
-            return response()->json(['data' => 1]);
+            return response()->json(['data' => 0]);     // المريض عنده نفس الموعد
         }
+
+        // تحقق من التعارض مع مريض آخر عند نفس الدكتور
+        $conflict = Appointment::where('doctor_id', $request->doctor_id)
+            ->where('date', $appointmentDate)
+            ->where('time', $request->appointment_time)
+            ->exists();
+
+        if ($conflict) {
+            return response()->json(['data' => 1]);     // الموعد محجوز
+        }
+
+        $status = 'Pending';
+
+        Appointment::create([
+            'patient_id'    => $request->patient_id,
+            'doctor_id'     => $request->doctor_id,
+            'department_id' => $request->department_id,
+            'date'          => $appointmentDate,
+            'time'          => $request->appointment_time,
+            'notes'         => $request->notes,
+            'status'        => $status,
+        ]);
+
+        return response()->json(['data' => 3]);      // تم الحجز بنجاح
     }
+
 
 
 
@@ -64,49 +89,51 @@ class AppointmentController extends Controller{
 
 
     public function searchAppointments(Request $request){
-        $keyword = $request->input('keyword');
-        $filter = $request->input('filter');
+        $keyword = trim((string) $request->input('keyword', ''));
+        $filter  = $request->input('filter', '');
 
-        $appointments = Appointment::with(['patient.user', 'clinic', 'department', 'doctor.user']);
+        $appointments = Appointment::with(['patient.user', 'department', 'doctor.user']);
 
-        if ($keyword) {
+        if ($keyword !== '') {
             switch ($filter) {
                 case 'patient':
-                    $appointments->whereHas('patient.user', fn($q) =>
-                        $q->where('name', 'like', "$keyword%")
-                    );
+                    $appointments->whereHas('patient.user', function ($q) use ($keyword) {
+                        $q->where('name', 'like', "{$keyword}%");
+                    });
                     break;
+
                 case 'department':
-                    $appointments->whereHas('department', fn($q) =>
-                        $q->where('name', 'like', "$keyword%")
-                    );
+                    $appointments->whereHas('department', function ($q) use ($keyword) {
+                        $q->where('name', 'like', "{$keyword}%");
+                    });
                     break;
+
                 case 'doctor':
-                    $appointments->whereHas('doctor.user', fn($q) =>
-                        $q->where('name', 'like', "$keyword%")
-                    );
+                    $appointments->whereHas('doctor.user', function ($q) use ($keyword) {
+                        $q->where('name', 'like', "{$keyword}%");
+                    });
                     break;
+
                 case 'date':
-                    $appointments->where('date', 'like', "$keyword%");
+                    $appointments->where('date', 'like', "{$keyword}%");
                     break;
+
                 case 'status':
-                    $appointments->where('status', 'like', "$keyword%");
+                    $appointments->where('status', 'like', "{$keyword}%");
                     break;
             }
         }
 
         $appointments = $appointments->orderBy('id')->paginate(12);
 
-        $view = view('Backend.admin.appointments.searchAppointment', compact('appointments'))->render();
-        $pagination = $appointments->total() > 12
-            ? $appointments->links('pagination::bootstrap-4')->render()
-            : '';
+        $view       = view('Backend.admin.appointments.searchAppointment', compact('appointments'))->render();
+        $pagination = $appointments->total() > 12 ? $appointments->links('pagination::bootstrap-4')->render() : '';
 
         return response()->json([
             'html'       => $view,
             'pagination' => $pagination,
             'count'      => $appointments->total(),
-            'searching'  => !empty($keyword)
+            'searching'  => $keyword !== '',
         ]);
     }
 
@@ -140,7 +167,7 @@ class AppointmentController extends Controller{
             ->where('department_id', $request->department_id)
             ->where('date', $appointmentDate)
             ->where('time', $request->appointment_time)
-            ->where('id', '!=', $id) 
+            ->where('id', '!=', $id)
             ->exists();
 
         if ($exists) {
@@ -169,6 +196,26 @@ class AppointmentController extends Controller{
         $appointment = Appointment::findOrFail($id);
         $appointment->delete();
         return response()->json(['success' => true]);
+    }
+
+
+
+
+
+    public function searchPatients(Request $request){
+        $keyword = $request->get('keyword', '');
+        $patients = Patient::with('user')
+            ->whereHas('user', function ($q) use ($keyword) {
+                $q->where('name', 'like', "{$keyword}%");
+            })
+            ->limit(20) ->get();
+
+        return response()->json($patients->map(function($patient) {
+            return [
+                'id'   => $patient->id,
+                'name' => $patient->user->name,
+            ];
+        }));
     }
 
 }

@@ -18,9 +18,9 @@ class JobTitlesSeeder extends Seeder
             ['name' => 'Receptionist'],
             ['name' => 'Nurse'],
             ['name' => 'Accountant'],
-            ['name' => 'Security Officer'],
-            ['name' => 'Cleaner'],
             ['name' => 'Store Supervisor'],
+            // ['name' => 'Security Officer'],
+            // ['name' => 'Cleaner'],
         ]);
     }
 }

@@ -55,11 +55,12 @@ class DashboardController extends Controller{
             $password = Hash::make($request->password);
         }
 
-        $imageName = $user->image;
+        $imagePath = $user->image;
         if ($request->hasFile('image')) {
             $file = $request->file('image');
-            $imageName = 'admin/' . time() . '_' . $file->getClientOriginalName();
-            $file->move(public_path('admin'), $imageName);
+            $imageName = time() . '_' . $file->getClientOriginalName();
+      $file->move(public_path('assets/img/admin'), $imageName);
+            $imagePath = 'assets/img/admin/' . $imageName;
         }
 
         $user->update([
@@ -68,7 +69,7 @@ class DashboardController extends Controller{
             'password' => $password ,
             'phone' => $request->phone,
             'address' => $request->address,
-            'image' => $imageName,
+            'image' => $imagePath,
             'date_of_birth' => $request->date_of_birth,
             'gender' => $request->gender,
         ]);

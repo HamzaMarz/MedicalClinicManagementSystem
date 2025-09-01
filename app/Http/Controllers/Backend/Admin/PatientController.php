@@ -75,14 +75,13 @@ class PatientController extends Controller{
             return response()->json(['data' => 2]); // تم الحفظ
         }
 
-        // المستخدم غير موجود - أنشئه ثم كمل
         if ($request->hasFile('image')) {
             $file = $request->file('image');
-            $filename = time().'_'.$file->getClientOriginalName();
-            $file->move(public_path('patients'), $filename);
-            $imageName = 'patients/'.$filename;
+            $imageName = time() . '_' . $file->getClientOriginalName();
+            $file->move(public_path('assets/img/patients'), $imageName);
+            $imagePath = 'assets/img/patients/' . $imageName;
         } else {
-            $imageName = null;
+            $imagePath = null;
         }
 
         $user = User::create([
@@ -91,7 +90,7 @@ class PatientController extends Controller{
             'password'     => Hash::make($request->password),
             'phone'        => $request->phone,
             'address'      => $request->address,
-            'image'        => $imageName,
+            'image'        => $imagePath,
             'date_of_birth'=> $request->date_of_birth,
             'gender'       => $request->gender,
         ]);
@@ -197,38 +196,38 @@ class PatientController extends Controller{
             return response()->json(['data' => 0]);
         }else{
             $imagePath = $user->image;
-        if ($request->hasFile('image')) {
-            $file     = $request->file('image');
-            $filename = time().'_'.$file->getClientOriginalName();
-            $file->move(public_path('patients'), $filename);
-            $imagePath = 'patients/'.$filename;
-        }
+            if ($request->hasFile('image')) {
+                $file = $request->file('image');
+                $imageName = time() . '_' . $file->getClientOriginalName();
+                $file->move(public_path('assets/img/patients'), $imageName);
+                $imagePath = 'assets/img/patients/' . $imageName;
+            }
 
-        $password = $user->password;
-        if ($request->filled('password')) {
-            $password = Hash::make($request->password);
-        }
+            $password = $user->password;
+            if ($request->filled('password')) {
+                $password = Hash::make($request->password);
+            }
 
-        $user->update([
-            'name'          => $request->name,
-            'email'         => $request->email,
-            'password'      => $password,
-            'phone'         => $request->phone,
-            'address'       => $request->filled('address') ? $request->address : null,
-            'image'         => $imagePath,
-            'date_of_birth' => $request->date_of_birth,
-            'gender'        => $request->gender,
-        ]);
+            $user->update([
+                'name'          => $request->name,
+                'email'         => $request->email,
+                'password'      => $password,
+                'phone'         => $request->phone,
+                'address'       => $request->filled('address') ? $request->address : null,
+                'image'         => $imagePath,
+                'date_of_birth' => $request->date_of_birth,
+                'gender'        => $request->gender,
+            ]);
 
 
-        $patient->update([
-            'blood_type'        => $request->blood_type,
-            'emergency_contact' => $request->emergency_contact,
-            'allergies'         => $request->allergies,
-            'chronic_diseases'  => $request->chronic_diseases,
-        ]);
+            $patient->update([
+                'blood_type'        => $request->blood_type,
+                'emergency_contact' => $request->emergency_contact,
+                'allergies'         => $request->allergies,
+                'chronic_diseases'  => $request->chronic_diseases,
+            ]);
 
-        return response()->json(['data' => 1]);
+            return response()->json(['data' => 1]);
         }
 
 

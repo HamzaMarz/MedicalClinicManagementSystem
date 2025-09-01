@@ -1,4 +1,4 @@
-@extends('Backend.master')
+@extends('Backend.admin.master')
 
 @section('title' , 'Clinic Profile')
 
@@ -43,7 +43,7 @@
                             </div>
                         </div>
                     </div>
-                
+
                     <div class="col-md-6 mb-3">
                         <div class="p-3 rounded d-flex align-items-center shadow-sm" style="background-color: #ebeaea;">
                             <span class="badge bg-success p-3 rounded-circle me-4">
@@ -55,7 +55,7 @@
                             </div>
                         </div>
                     </div>
-                
+
                     <div class="col-md-6 mb-3">
                         <div class="p-3 rounded d-flex align-items-center shadow-sm" style="background-color: #ebeaea;">
                             <span class="badge bg-warning p-3 rounded-circle me-4">
@@ -67,7 +67,7 @@
                             </div>
                         </div>
                     </div>
-                
+
                     <div class="col-md-6 mb-3">
                         <div class="p-3 rounded d-flex align-items-center shadow-sm" style="background-color: #ebeaea;">
                             <span class="badge bg-primary p-3 rounded-circle me-4">

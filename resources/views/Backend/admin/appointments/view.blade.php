@@ -1,4 +1,4 @@
-@extends('Backend.master')
+@extends('Backend.admin.master')
 
 @section('title' , 'View Appointments')
 
@@ -91,17 +91,25 @@
                                         <td>{{ $appointment->date }}</td>
                                         <td>{{ $appointment->time }}</td>
                                         <td>
-                                            @if($appointment->status === 'Scheduled')
-                                                <span class="status-badge" style="min-width: 140px; display: inline-block; text-align: center; padding: 4px 12px; font-size: 18px; border-radius: 50px; background-color: #189de4; color: white;">
-                                                    Scheduled
+                                            @if($appointment->status === 'Pending')
+                                                <span class="status-badge" style="min-width: 140px; display:inline-block; text-align:center; padding:4px 12px; font-size:18px; border-radius:50px; background-color:#ffc107; color:white;">
+                                                    Pending
+                                                </span>
+                                            @elseif($appointment->status === 'Accepted')
+                                                <span class="status-badge" style="min-width: 140px; display:inline-block; text-align:center; padding:4px 12px; font-size:18px; border-radius:50px; background-color:#189de4; color:white;">
+                                                    Accepted
+                                                </span>
+                                            @elseif($appointment->status === 'Rejected')
+                                                <span class="status-badge" style="min-width: 140px; display:inline-block; text-align:center; padding:4px 12px; font-size:18px; border-radius:50px; background-color:#6c757d; color:white;">
+                                                    Rejected
+                                                </span>
+                                            @elseif($appointment->status === 'Cancelled')
+                                                <span class="status-badge" style="min-width: 140px; display:inline-block; text-align:center; padding:4px 12px; font-size:18px; border-radius:50px; background-color:#f90d25; color:white;">
+                                                    Cancelled
                                                 </span>
                                             @elseif($appointment->status === 'Completed')
-                                                <span class="status-badge" style="min-width: 140px; display: inline-block; text-align: center; padding: 4px 12px; font-size: 18px; border-radius: 50px; background-color: #15ef70; color: white;">
+                                                <span class="status-badge" style="min-width: 140px; display:inline-block; text-align:center; padding:4px 12px; font-size:18px; border-radius:50px; background-color:#15ef70; color:white;">
                                                     Completed
-                                                </span>
-                                            @else
-                                                <span class="status-badge" style="min-width: 140px; display: inline-block; text-align: center; padding: 4px 12px; font-size: 18px; border-radius: 50px; background-color: #f90d25; color: white;">
-                                                    Cancelled
                                                 </span>
                                             @endif
                                         </td>
@@ -179,83 +187,58 @@
         });
 
         $(document).ready(function () {
+    let lastKeyword = '';
 
-            function fetchAppointments() {
-                let keyword = $('#search_input').val().trim();
-                let filter = $('#search_filter').val();
+    function fetchAppointments(url = "{{ route('search_appointments') }}") {
+        let keyword = $('#search_input').val().trim();
+        let filter  = $('#search_filter').val();
 
-                // ✅ إذا البحث فارغ تمامًا، أرجع للعرض الأساسي
-                if (keyword === '') {
-                    window.location.href = "{{ route('view_appointments') }}";
-                    return;
-                }
+        if (keyword === '' && lastKeyword === '') return;
 
-                $.ajax({
-                    url: "{{ route('search_appointments') }}",
-                    type: 'GET',
-                    dataType: 'json',
-                    data: {
-                        keyword: keyword,
-                        filter: filter
-                    },
-                    success: function (response) {
-                        $('#appointments_table_body').html(response.html);
+        if (keyword === '' && lastKeyword !== '') {
+            lastKeyword = '';
+            window.location.href = "{{ route('view_appointments') }}";
+            return;
+        }
 
-                        if (response.searching) {
-                            if (response.count > 12) {
-                                $('#main-pagination').html(response.pagination).show();
-                            } else {
-                                $('#main-pagination').empty().hide();
-                            }
-                        } else {
-                            $('#main-pagination').show();
-                        }
-                    },
-                    error: function () {
-                        console.error("فشل في تحميل نتائج البحث.");
+        lastKeyword = keyword;
+
+        $.ajax({
+            url: url,
+            type: 'GET',
+            dataType: 'json',
+            data: { keyword: keyword, filter: filter },
+            success: function (response) {
+                $('#appointments_table_body').html(response.html);
+
+                if (response.searching) {
+                    if (response.count > 12) {
+                        $('#main-pagination').html(response.pagination).show();
+                    } else {
+                        $('#main-pagination').empty().hide();
                     }
-                });
-            }
-
-            $('#search_input, #search_filter').on('input change', function () {
-                fetchAppointments();
-            });
-
-            function fetchAppointmentsWithUrl(url) {
-                let keyword = $('#search_input').val().trim();
-                let filter = $('#search_filter').val();
-
-                $.ajax({
-                    url: url,
-                    type: 'GET',
-                    dataType: 'json',
-                    data: {
-                        keyword: keyword,
-                        filter: filter
-                    },
-                    success: function (response) {
-                        $('#appointments_table_body').html(response.html);
-
-                        if (response.count > 12) {
-                            $('#main-pagination').html(response.pagination).show();
-                        } else {
-                            $('#main-pagination').empty().hide();
-                        }
-                    },
-                });
-            }
-
-            $(document).on('click', '#main-pagination .page-link', function (e) {
-                let keyword = $('#search_input').val().trim();
-                if (keyword !== '') {
-                    e.preventDefault();
-                    let url = $(this).attr('href');
-                    if (url !== undefined && url !== '#') {
-                        fetchAppointmentsWithUrl(url);
-                    }
+                } else {
+                    $('#main-pagination').show();
                 }
-            });
+            },
+            error: function () {
+                console.error("فشل في تحميل نتائج البحث.");
+            }
         });
+    }
+
+    $(document).on('input', '#search_input', function () { fetchAppointments(); });
+    $(document).on('change', '#search_filter', function () { fetchAppointments(); });
+
+    $(document).on('click', '#main-pagination .page-link', function (e) {
+        let keyword = $('#search_input').val().trim();
+        if (keyword !== '') {
+            e.preventDefault();
+            let url = $(this).attr('href');
+            if (url && url !== '#') fetchAppointments(url);
+        }
+    });
+});
 
     </script>
 @endsection

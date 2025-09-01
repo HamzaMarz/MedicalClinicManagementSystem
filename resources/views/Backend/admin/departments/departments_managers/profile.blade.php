@@ -1,4 +1,4 @@
-@extends('Backend.master')
+@extends('Backend.admin.master')
 
 @section('title', 'Department Manager Profile')
 
@@ -94,12 +94,12 @@
                             <th><i class="fas fa-clock text-primary me-2"></i> Work Start Time:</th>
                             <td>{{ \Carbon\Carbon::parse($departmentManager->work_start_time)->format('H:i') ?? '-' }}</td>
                         </tr>
-                    
+
                         <tr>
                             <th><i class="fas fa-clock text-primary me-2"></i> Work End Time:</th>
                             <td>{{ \Carbon\Carbon::parse($departmentManager->work_end_time)->format('H:i') ?? '-' }}</td>
                         </tr>
-                    
+
                         <tr>
                             <th><i class="fas fa-calendar-day text-primary me-2"></i> Working Days:</th>
                             <td>

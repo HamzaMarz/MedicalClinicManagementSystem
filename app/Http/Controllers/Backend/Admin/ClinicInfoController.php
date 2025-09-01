@@ -21,19 +21,20 @@ class ClinicInfoController extends Controller{
     public function updateClinicProfile(Request $request){
         $clinic = ClinicInfo::firstOrFail();
 
-        $imageName = $clinic->image;
-            if ($request->hasFile('logo')) {
-                $file = $request->file('logo');
-                $imageName = 'clinic/' . time() . '_' . $file->getClientOriginalName();
-                $file->move(public_path('clinic'), $imageName);
-            }
+        $imagePath = $clinic->image;
+        if ($request->hasFile('logo')) {
+            $file = $request->file('logo');
+            $imageName = time() . '_' . $file->getClientOriginalName();
+            $file->move(public_path('assets/img/clinic'), $imageName);
+            $imagePath = 'assets/img/clinic/' . $imageName;
+        }
 
         $clinic->update([
             'name' => $request->name ,
             'email' => $request->email ,
             'phone' => $request->phone,
             'location' => $request->location,
-            'logo' => $imageName,
+            'logo' => $imagePath,
             'work_days' => $request->work_days,
             'work_start' => $request->work_start,
             'work_end' => $request->work_end,

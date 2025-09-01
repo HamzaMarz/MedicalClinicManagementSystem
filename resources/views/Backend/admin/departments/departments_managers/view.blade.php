@@ -1,4 +1,4 @@
-@extends('Backend.master')
+@extends('Backend.admin.master')
 
 @section('title' , 'View Department Manager')
 
@@ -44,7 +44,7 @@
                         <div class="profile-widget">
                             <div class="doctor-img">
                                 <a class="avatar" href="{{ Route('profile_department_manager' , ['id' => $departmentsManager->id]) }}">
-                                    <img src="{{ asset($departmentsManager->user->image ?? 'assets/img/user.jpg') }}">   
+                                    <img src="{{ asset($departmentsManager->user->image ?? 'assets/img/user.jpg') }}">
                                 </a>
                             </div>
                             <div class="dropdown profile-action">

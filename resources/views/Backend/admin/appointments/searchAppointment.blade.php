@@ -17,13 +17,22 @@
             </td>
             <td>
                 @php
-                    $color = match($appointment->status) {
-                        'Scheduled' => '#189de4',
+                    $statusColors = [
+                        'Pending'   => '#ffc107',
+                        'Accepted'  => '#189de4',
+                        'Rejected'  => '#6c757d',
+                        'Cancelled' => '#f90d25',
                         'Completed' => '#15ef70',
-                        default => '#f90d25'
-                    };
+                    ];
+                    $color = $statusColors[$appointment->status] ?? '#6c757d';
                 @endphp
-                <span class="badge" style="background-color: {{ $color }}; color: white; font-size: 14px; border-radius: 20px; padding: 6px 14px;">
+
+                <span class="badge"
+                    style="background-color: {{ $color }};
+                            color: white;
+                            font-size: 14px;
+                            border-radius: 20px;
+                            padding: 6px 14px;">
                     {{ $appointment->status }}
                 </span>
             </td>

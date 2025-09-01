@@ -3,19 +3,29 @@
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\Frontend\HomeController;
 use App\Http\Controllers\Auth\RegisteredUserController;
-use App\Http\Controllers\Backend\Admin\ClinicController;
 use App\Http\Controllers\Backend\Admin\DoctorController;
 use App\Http\Controllers\Backend\Admin\PatientController;
 use App\Http\Controllers\Backend\Admin\EmployeeController;
 use App\Http\Controllers\Backend\Admin\PharmacyController;
-use App\Http\Controllers\Backend\Admin\DashboardController;
 use App\Http\Controllers\Backend\Admin\ClinicInfoController;
 use App\Http\Controllers\Backend\Admin\DepartmentController;
 use App\Http\Controllers\Backend\Admin\MedicationController;
 use App\Http\Controllers\Auth\AuthenticatedSessionController;
 use App\Http\Controllers\Backend\Admin\AppointmentController;
+use App\Http\Controllers\Backend\Admin\NotificationController as AdminNotificationController;
 use App\Http\Controllers\Backend\Admin\PrescriptionController;
 use App\Http\Controllers\Backend\Admin\MedicationStockController;
+use App\Http\Controllers\Backend\Admin\MedicationRequestController;
+use App\Http\Controllers\Backend\Employee\StoreSupervisor\RequestController;
+use App\Http\Controllers\Backend\Admin\DashboardController as AdminDashboardController;
+use App\Http\Controllers\Backend\Doctor\DashboardController as DoctorDashboardController;
+use App\Http\Controllers\Backend\Patient\DashboardController as PatientDashboardController;
+use App\Http\Controllers\Backend\Employee\Nurse\DashboardController as NurseDashboardController;
+use App\Http\Controllers\Backend\DepartmentManager\DashboardController as ManagerDashboardController;
+use App\Http\Controllers\Backend\Employee\Accountant\DashboardController as AccountantDashboardController;
+use App\Http\Controllers\Backend\Employee\Receptionist\DashboardController as ReceptionistDashboardController;
+use App\Http\Controllers\Backend\Employee\StoreSupervisor\DashboardController as StoreSupervisorDashboardController;
+use App\Http\Controllers\Backend\Employee\StoreSupervisor\NotificationController as StoreSupervisorNotificationController;
 
 Route::prefix('clinic-management')->group(function () {
 
@@ -45,10 +55,10 @@ Route::prefix('admin')->middleware(['auth', 'verified', 'role:admin'])->group(fu
 
 
     //Dashboard
-    Route::get('/dashboard', [DashboardController::class, 'adminDashboard'])->name('dashboard');
-    Route::get('/my_profile' , [DashboardController::class , 'myProfile'])->name('my_profile');
-    Route::get('/edit/profile' , [DashboardController::class , 'editProfile'])->name('edit_profile');
-    Route::put('/update/profile' , [DashboardController::class , 'updateProfile'])->name('update_profile');
+    Route::get('/dashboard', [AdminDashboardController::class, 'adminDashboard'])->name('dashboard');
+    Route::get('/my_profile' , [AdminDashboardController::class , 'myProfile'])->name('my_profile');
+    Route::get('/edit/profile' , [AdminDashboardController::class , 'editProfile'])->name('edit_profile');
+    Route::put('/update/profile' , [AdminDashboardController::class , 'updateProfile'])->name('update_profile');
 
 
     //Department
@@ -117,10 +127,14 @@ Route::prefix('admin')->middleware(['auth', 'verified', 'role:admin'])->group(fu
     Route::put('/update/appointment/{id}' ,[AppointmentController::class , 'updateAppointment'])->name('update_appointment');
     Route::delete('/delete/appointment/{id}' ,[AppointmentController::class ,'deleteAppointment'])->name('delete_appointment');
 
+    Route::get('/search/patients', [PatientController::class, 'searchPatients'])->name('search_patients');
+
 
     //Pharmacy
-    Route::get('/pharmacy/profile', [PharmacyController::class, 'pharmacyProfile'])->name('pharmacy_profile');
-    Route::get('/pharmacy/view', [PharmacyController::class, 'pharmacyView'])->name('pharmacy_view');
+    Route::get('/view/pharmacy/inventory', [PharmacyController::class, 'viewPharmacyInventory'])->name('view_pharmacy_inventory');
+    Route::get('/search/pharmacy/inventory',[PharmacyController::class , 'searchPharmacyInventory'])->name('search_pharmacy_inventory');
+
+    Route::get('/pharmacy/view', [PharmacyController::class, 'pharmacyView'])->name('pharmacy_view'); // عدل هنا
 
 
     //Medication
@@ -131,24 +145,38 @@ Route::prefix('admin')->middleware(['auth', 'verified', 'role:admin'])->group(fu
     Route::get('/description/medication/{id}',[MedicationController::class , 'descriptionMedication'])->name('description_medication');
     Route::get('/edit/medication/{id}' ,[MedicationController::class , 'editMedication'])->name('edit_medication');
     Route::put('/update/medication/{id}' ,[MedicationController::class , 'updateMedication'])->name('update_medication');
-    Route::delete('/delete/medication/{id}' ,[MedicationController::class , 'deleteMedication'])->name('delete_medication');
+    Route::delete('/medication/{id}' ,[MedicationController::class , 'deleteMedication'])->name('delete_medication');
 
+    //Trashed Medication
+    Route::get('/view/trashed/medications', [MedicationController::class, 'viewTrashedMedications'])->name('view_trashed_medications');
+    Route::get('/search/trashed/medications',[MedicationController::class , 'searchTrashedMedications'])->name('search_trashed_medications');
+    Route::post('/restore/medication/{id}', [MedicationController::class, 'restoreMedication'])->name('restore_medication');
+    Route::delete('/medication/force-delete/{id}', [MedicationController::class, 'forceDeleteMedication'])->name('force_delete_medication');
+    Route::delete('/medications/remove-all', [MedicationController::class, 'forceDeleteAllMedications'])->name('force_delete_all_medications');
 
     //Prescription
     Route::get('/view/prescriptions' ,[PrescriptionController::class , 'viewPrescriptions'])->name('view_prescriptions');
     Route::get('/description/prescription/{id}',[PrescriptionController::class , 'descriptionPrescription'])->name('description_prescription');
 
 
-    //Medication Stock
-    Route::get('/add/toStock' ,[MedicationStockController::class , 'addToStock'])->name('add_to_stock');
-    Route::post('/store/toStock',[MedicationStockController::class , 'storeToStock'])->name('store_to_stock');
-    Route::get('/generate-batch-number',[MedicationStockController::class , 'generateBatchNumber'])->name('generate_batch_number');
-    Route::get('/view/stocks' ,[MedicationStockController::class , 'viewStocks'])->name('view_stocks');
-    Route::get('/description/stock/{id}',[MedicationStockController::class , 'descriptionStock'])->name('description_stock');
-    Route::get('/edit/stock/{id}' ,[MedicationStockController::class , 'editStock'])->name('edit_stock');
-    Route::put('/update/stock/{id}' ,[MedicationStockController::class , 'updateStock'])->name('update_stock');
-    Route::delete('/delete/stock/{id}' ,[MedicationStockController::class , 'deleteStock'])->name('delete_stock');
+    //Stock
+    // Route::get('/add/medication/to/Stock' ,[MedicationStockController::class , 'addMedicationToStock'])->name('add_medication_to_stock');
+    // Route::post('/store/medication/to/Stock',[MedicationStockController::class , 'storeMedicationToStock'])->name('store_medication_to_stock');
+    // Route::get('/generate-batch-number',[MedicationStockController::class , 'generateBatchNumber'])->name('generate_batch_number');
+    Route::get('/view/stock' ,[MedicationStockController::class , 'viewStock'])->name('view_stock');
 
+    // Route::get('/description/stock/{id}',[MedicationStockController::class , 'descriptionStock'])->name('description_stock');
+    // Route::get('/edit/stock/{id}' ,[MedicationStockController::class , 'editStock'])->name('edit_stock');
+    // Route::put('/update/stock/{id}' ,[MedicationStockController::class , 'updateStock'])->name('update_stock');
+    // Route::delete('/delete/stock/{id}' ,[MedicationStockController::class , 'deleteStock'])->name('delete_stock');
+
+
+    //Medication Requests
+    Route::get('/add/medication/request', [MedicationRequestController::class, 'addMedicationRequest'])->name('add_medication_request');
+    Route::post('/store/medication/request', [MedicationRequestController::class, 'storeMedicationRequest'])->name('store_medication_request');
+    Route::get('/medication/requests', [MedicationRequestController::class, 'index'])->name('medication_requests');
+    Route::post('/medication/request/{id}/approve', [MedicationRequestController::class, 'approve'])->name('approve_medication_request');
+    Route::post('/medication/request/{id}/reject', [MedicationRequestController::class, 'reject'])->name('reject_medication_request');
 
 
     //***Finance***//
@@ -196,6 +224,135 @@ Route::prefix('admin')->middleware(['auth', 'verified', 'role:admin'])->group(fu
     // //Reports
     // Route::get('/view/reports' ,[ReportController::class , 'viewReports'])->name('view_reports');
 
+    // Notifications
+    Route::get('/notifications/read/{id}', [AdminNotificationController::class, 'markAsRead'])->name('notifications.read');
+
 });
 
 
+
+
+
+//Department Manager
+Route::prefix('department-manager')->middleware(['auth', 'verified', 'role:department_manager'])->group(function () {
+
+    //Dashboard
+    Route::get('/dashboard', [ManagerDashboardController::class, 'departmentManagerDashboard'])->name('department_manager_dashboard');
+    Route::get('/profile' , [ManagerDashboardController::class , 'departmentManagerProfile'])->name('department_manager_profile');
+    Route::get('/edit/profile' , [ManagerDashboardController::class , 'departmentManagerEditProfile'])->name('department_manager_edit_profile');
+    Route::put('/update/profile' , [ManagerDashboardController::class , 'departmentManagerUpdateProfile'])->name('department_manager_update_profile');
+
+
+
+
+});
+
+
+
+
+
+//Doctor
+Route::prefix('doctor')->middleware(['auth', 'verified', 'role:doctor'])->group(function () {
+
+    //Dashboard
+    Route::get('/dashboard', [DoctorDashboardController::class, 'doctorDashboard'])->name('doctor_dashboard');
+    Route::get('/profile' , [DoctorDashboardController::class , 'doctorProfile'])->name('doctor_profile');
+    Route::get('/edit/profile' , [DoctorDashboardController::class , 'doctorEditProfile'])->name('doctor_edit_profile');
+    Route::put('/update/profile' , [DoctorDashboardController::class , 'doctorUpdateProfile'])->name('doctor_update_profile');
+
+
+
+
+});
+
+
+
+
+
+//Employees
+/** Accountants **/
+Route::prefix('employee/accountant')->middleware(['auth', 'verified', 'role:employee'])->group(function () {
+
+    //Dashboard
+    Route::get('/dashboard', [AccountantDashboardController::class, 'accountantDashboard'])->name('accountant_dashboard');
+    Route::get('/profile' , [AccountantDashboardController::class , 'accountantProfile'])->name('accountant_profile');
+    Route::get('/edit/profile' , [AccountantDashboardController::class , 'accountantEditProfile'])->name('accountant_edit_profile');
+    Route::put('/update/profile' , [AccountantDashboardController::class , 'accountantUpdateProfile'])->name('accountant_update_profile');
+
+
+
+
+});
+
+
+
+/** Nurses **/
+Route::prefix('employee/nurse')->middleware(['auth', 'verified', 'role:employee'])->group(function () {
+
+    //Dashboard
+    Route::get('/dashboard', [NurseDashboardController::class, 'nurseDashboard'])->name('nurse_dashboard');
+    Route::get('/profile' , [NurseDashboardController::class , 'nurseProfile'])->name('nurse_profile');
+    Route::get('/edit/profile' , [NurseDashboardController::class , 'nurseEditProfile'])->name('nurse_edit_profile');
+    Route::put('/update/profile' , [NurseDashboardController::class , 'nurseUpdateProfile'])->name('nurse_update_profile');
+
+
+
+
+});
+
+
+
+/** Receptionists **/
+Route::prefix('employee/receptionist')->middleware(['auth', 'verified', 'role:employee'])->group(function () {
+
+    //Dashboard
+    Route::get('/dashboard', [ReceptionistDashboardController::class, 'receptionistDashboard'])->name('receptionist_dashboard');
+    Route::get('/profile' , [ReceptionistDashboardController::class , 'receptionistProfile'])->name('receptionist_profile');
+    Route::get('/edit/profile' , [ReceptionistDashboardController::class , 'receptionistEditProfile'])->name('receptionist_edit_profile');
+    Route::put('/update/profile' , [ReceptionistDashboardController::class , 'receptionistUpdateProfile'])->name('receptionist_update_profile');
+
+
+
+
+});
+
+
+
+/** StoreSupervisors **/
+Route::prefix('employee/store-supervisor')->middleware(['auth', 'verified', 'role:employee'])->group(function () {
+
+    //Dashboard
+    Route::get('/dashboard', [StoreSupervisorDashboardController::class, 'storeSupervisorDashboard'])->name('store_supervisor_dashboard');
+    Route::get('/profile' , [StoreSupervisorDashboardController::class , 'storeSupervisorProfile'])->name('store_supervisor_profile');
+    Route::get('/edit/profile' , [StoreSupervisorDashboardController::class , 'storeSupervisorEditProfile'])->name('store_supervisor_edit_profile');
+    Route::put('/update/profile' , [StoreSupervisorDashboardController::class , 'storeSupervisorUpdateProfile'])->name('store_supervisor_update_profile');
+
+    Route::get('/view/requests', [RequestController::class, 'viewRequests'])->name('view_requests');
+    Route::post('/medication-requests/{id}/approve', [RequestController::class, 'approve'])->name('medication_request_approve');
+    Route::get('/view/reject/{id}', [RequestController::class, 'viewReject'])->name('view_reject');
+    Route::post('/medication-requests/{id}/reject', [RequestController::class, 'reject'])->name('medication_request_reject');
+    Route::get('/request/description/{id}', [RequestController::class, 'requestDescription'])->name('request_description');
+
+
+
+    // Notifications
+    Route::get('/notifications/read/{id}', [StoreSupervisorNotificationController::class, 'markAsRead'])->name('notifications.read');
+
+});
+
+
+
+
+
+Route::prefix('patient')->middleware(['auth', 'verified', 'role:patient'])->group(function () {
+
+    //Dashboard
+    Route::get('/dashboard', [PatientDashboardController::class, 'patientDashboard'])->name('patient_dashboard');
+    Route::get('/profile' , [PatientDashboardController::class , 'patientProfile'])->name('patient_profile');
+    Route::get('/edit/profile' , [PatientDashboardController::class , 'patientEditProfile'])->name('patient_edit_profile');
+    Route::put('/update/profile' , [PatientDashboardController::class , 'patientUpdateProfile'])->name('patient_update_profile');
+
+
+
+
+});
