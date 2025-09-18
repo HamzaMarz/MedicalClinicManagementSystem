@@ -65,13 +65,32 @@ class MedicationController extends Controller{
                     $medications->where('category', 'like', "{$keyword}%");
                     break;
 
-                case 'status':
-                    $medications->where('status', 'like', "{$keyword}%");
-                    break;
-            }
-        }
+                    case 'status':
+                        // مبدئياً هات كل الأدوية
+                        $medications = $medications->get()->filter(function ($medication) use ($keyword) {
+                            return stripos($medication->status, $keyword) !== false;
+                        });
 
-        $medications = $medications->orderBy('id')->paginate(12);
+                        // بما إنه صارت Collection، نرجع نعمل paginate يدوي
+                        $page     = request()->get('page', 1);
+                        $perPage  = 12;
+                        $offset   = ($page * $perPage) - $perPage;
+                        $paginated = new \Illuminate\Pagination\LengthAwarePaginator(
+                            $medications->slice($offset, $perPage)->values(),
+                            $medications->count(),
+                            $perPage,
+                            $page,
+                            ['path' => request()->url(), 'query' => request()->query()]
+                        );
+
+                        $medications = $paginated;
+                        break;
+                }
+            }
+
+            if ($filter !== 'status') {
+                $medications = $medications->orderBy('id')->paginate(12);
+            }
 
         $view       = view('Backend.admin.medications.searchMedication', compact('medications'))->render();
         $pagination = $medications->total() > 12 ? $medications->links('pagination::bootstrap-4')->render() : '';
@@ -88,9 +107,9 @@ class MedicationController extends Controller{
 
 
 
-    public function descriptionMedication($id){
+    public function detailsMedication($id){
         $medication = Medication::findOrFail($id);
-        return view('Backend.admin.medications.description', compact('medication'));
+        return view('Backend.admin.medications.details', compact('medication'));
     }
 
 

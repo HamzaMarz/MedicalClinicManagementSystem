@@ -19,6 +19,7 @@ return new class extends Migration
 
             $table->date('date');
             $table->time('time');
+            $table->decimal('consultation_fee', 5, 2);
             $table->enum('status', ['Pending', 'Accepted', 'Rejected', 'Cancelled', 'Completed'])->default('Pending');
             $table->text('notes')->nullable();
 

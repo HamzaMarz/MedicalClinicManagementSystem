@@ -8,6 +8,8 @@ class JobTitle extends Model{
 
     protected $fillable = [
         'name',
+        'need_department',
+        'need_doctor',
     ];
 
 

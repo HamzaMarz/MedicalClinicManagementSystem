@@ -98,7 +98,7 @@
 
         <div class="mt-4 row" style="margin-left: 450px;">
             <div class="col-lg-6 offset-lg-2 d-flex justify-content-end">
-                <a href="{{ url()->previous() }}" class="px-4 btn btn-primary rounded-pill fw-bold" style="font-weight: bold;">
+                <a href="{{ Route('view_medications') }}" class="px-4 btn btn-primary rounded-pill fw-bold" style="font-weight: bold;">
                     Back
                 </a>
             </div>

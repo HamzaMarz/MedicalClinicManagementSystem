@@ -11,10 +11,7 @@ use App\Models\Employee;
 use App\Models\Department;
 use App\Models\Appointment;
 use Illuminate\Http\Request;
-use App\Models\ClinicPatient;
-use App\Models\ClinicDepartment;
 use App\Models\DepartmentPatient;
-use Illuminate\Support\Facades\DB;
 use App\Http\Controllers\Controller;
 use Illuminate\Support\Facades\Hash;
 
@@ -28,7 +25,6 @@ class PatientController extends Controller{
 
 
     public function storePatient(Request $request){
-
         $appointmentDate = Carbon::parse("next {$request->appointment_day}")->toDateString();
 
         $conflict = Appointment::where('doctor_id', $request->doctor_id)
@@ -61,13 +57,14 @@ class PatientController extends Controller{
                 'department_id' => $request->department_id
             ]);
 
-            // أنشئ الموعد
+            $consultation_fee = Doctor::where('id', $request->doctor_id)->value('consultation_fee');
             Appointment::create([
                 'patient_id'           => $patient->id,
                 'doctor_id'            => $request->doctor_id,
                 'department_id'         => $request->department_id,
                 'date'                 => $appointmentDate,
                 'time'                 => $request->appointment_time,
+                'consultation_fee'     => $consultation_fee,
                 'status'               => 'Pending',
                 'notes'                => $request->notes,
             ]);
@@ -104,19 +101,21 @@ class PatientController extends Controller{
             'chronic_diseases'  => $request->chronic_diseases,
         ]);
 
-        
+
 
         DepartmentPatient::firstOrCreate([
             'patient_id' => $patient->id,
             'department_id' => $request->department_id
         ]);
 
+        $consultation_fee = Doctor::where('id', $request->doctor_id)->value('consultation_fee');
         Appointment::create([
             'patient_id'           => $patient->id,
             'doctor_id'            => $request->doctor_id,
             'department_id'        => $request->department_id,
             'date'                 => $appointmentDate,
             'time'                 => $request->appointment_time,
+            'consultation_fee'     => $consultation_fee,
             'status'               => 'Pending',
             'notes'                => $request->notes,
         ]);
@@ -239,7 +238,7 @@ class PatientController extends Controller{
     public function deletePatient($id){
         $patient = Patient::findOrFail($id);
         $user = User::where('id', $patient->user_id)->first();
-
+        DepartmentPatient::where('patient_id', $patient->id)->delete();
         $patient->delete();
         $user->delete();
         return response()->json(['success' => true]);
@@ -253,18 +252,18 @@ class PatientController extends Controller{
         $doctors = Doctor::whereHas('employee', function ($query) use ($department_id) {
             $query->where('department_id', $department_id);
         })->with(['employee.user'])->get();
-    
+
         $data = $doctors->map(function($doctor) {
             return [
                 'id'   => $doctor->id,
                 'name' => $doctor->employee->user->name ?? 'Unknown'
             ];
         });
-    
+
         return response()->json($data);
     }
-    
-    
+
+
     public function getDoctorInfo($id){
         $doctor = Doctor::with('employee')->findOrFail($id);
 

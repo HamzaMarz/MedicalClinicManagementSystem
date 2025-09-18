@@ -58,7 +58,7 @@
                                     <td>{{ $department->name }}</td>
                                     <td>
                                         <div class="d-flex justify-content-center">
-                                            <a href="{{ route('description_department', ['id' => $department->id]) }}" class="mr-1 btn btn-outline-success btn-sm"><i class="fa fa-eye"></i></a>
+                                            <a href="{{ route('details_department', ['id' => $department->id]) }}" class="mr-1 btn btn-outline-success btn-sm"><i class="fa fa-eye"></i></a>
                                             <a href="{{ route('edit_department', ['id' => $department->id]) }}" class="mr-1 btn btn-outline-primary btn-sm"><i class="fa fa-edit"></i></a>
                                             <button class="btn btn-outline-danger btn-sm delete-department" data-id="{{ $department->id }}"><i class="fa fa-trash"></i></button>
                                         </div>

@@ -96,6 +96,19 @@
                                     </div>
                                 </div>
 
+                                {{-- Day --}}
+                                <div class="col-sm-6">
+                                    <label>Appointment Day <span class="text-danger">*</span></label>
+                                    <div class="input-group">
+                                        <div class="input-group-prepend">
+                                            <span class="input-group-text"><i class="fas fa-calendar-alt"></i></span>
+                                        </div>
+                                        <select name="appointment_day" id="appointment_day" class="form-control" required>
+                                            <option value="" disabled selected hidden>Select Day</option>
+                                        </select>
+                                    </div>
+                                </div>
+
                                 {{-- Time --}}
                                 <div class="col-sm-6">
                                     <label>Appointment Time <span class="text-danger">*</span></label>
@@ -109,18 +122,6 @@
                                     </div>
                                 </div>
 
-                                {{-- Day --}}
-                                <div class="col-sm-6">
-                                    <label>Appointment Day <span class="text-danger">*</span></label>
-                                    <div class="input-group">
-                                        <div class="input-group-prepend">
-                                            <span class="input-group-text"><i class="fas fa-calendar-alt"></i></span>
-                                        </div>
-                                        <select name="appointment_day" id="appointment_day" class="form-control" required>
-                                            <option value="" disabled selected hidden>Select Day</option>
-                                        </select>
-                                    </div>
-                                </div>
 
                             </div>
                         </div>
@@ -207,7 +208,7 @@
                             Swal.fire('Error!', 'This appointment time has already passed. Please select another time', 'error');
                         }
                         else if (response.data == 3) {
-                            Swal.fire('Success', 'Appointment has been added successfully', 'success')
+                            Swal.fire('Success', 'Appointment Has Been Added Successfully', 'success')
                                 .then(() => {
                                     window.location.href = '/admin/add/appointment';
                                 });

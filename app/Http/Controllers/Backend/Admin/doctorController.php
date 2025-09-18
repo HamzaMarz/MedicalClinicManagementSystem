@@ -31,9 +31,6 @@ class DoctorController extends Controller{
     }
 
 
-
-
-
     public function storeDoctor(Request $request){
         if(User::where('email', $request->email)->exists()){
             return response()->json(['data' => 0]);
@@ -66,7 +63,6 @@ class DoctorController extends Controller{
                 'work_start_time' => $request->work_start_time,
                 'work_end_time' => $request->work_end_time,
                 'working_days' => $request->working_days,
-                'hire_date' => now()->toDateString(),
                 'status' => $request->status,
                 'short_biography' => $request->short_biography,
             ]);
@@ -76,6 +72,7 @@ class DoctorController extends Controller{
             EmployeeJobTitle::create([
                 'employee_id' => $employee->id,
                 'job_title_id' => $jobTitle->id,
+                'hire_date' => now()->toDateString(),
             ]);
 
 
@@ -83,6 +80,8 @@ class DoctorController extends Controller{
                 'employee_id' => $employee->id,
                 'qualification' => $request->qualification,
                 'experience_years' => $request->experience_years,
+                'specialty_id' => $request->specialty_id,
+                'consultation_fee' => $request->consultation_fee,
             ]);
             return response()->json(['data' => 1]);
         }
@@ -186,13 +185,13 @@ class DoctorController extends Controller{
 
     public function updateDoctor(Request $request, $id){
         $doctor = Doctor::findOrFail($id);
-        $employee = Employee::where('id', $doctor->employee_id)->first();
-        $user = $employee ? User::where('id', $employee->user_id)->first() : null;
+        $employee = Employee::findOrFail($doctor->employee_id);
+        $user = User::findOrFail($employee->user_id);
 
         $currentUserId = $doctor->employee->user_id;
         if (User::where('email', $request->email)->where('id', '!=', $currentUserId)->exists()) {
             return response()->json(['data' => 0]);
-        }else{
+        } else {
             $imagePath = $user->image;
             if ($request->hasFile('image')) {
                 $file = $request->file('image');
@@ -201,43 +200,43 @@ class DoctorController extends Controller{
                 $imagePath = 'assets/img/doctors/' . $imageName;
             }
 
-
             $password = $user->password;
             if ($request->filled('password')) {
                 $password = Hash::make($request->password);
             }
 
+            // تحديث بيانات المستخدم
             $user->update([
-                'name' => $request->name ,
-                'email' => $request->email ,
-                'phone' => $request->phone,
-                'password' => $password,
-                'image' => $imagePath,
-                'address' => $request->address,
-                'date_of_birth' => $request->date_of_birth,
-                'gender' => $request->gender,
+                'name'         => $request->name,
+                'email'        => $request->email,
+                'phone'        => $request->phone,
+                'password'     => $password,
+                'image'        => $imagePath,
+                'address'      => $request->address,
+                'date_of_birth'=> $request->date_of_birth,
+                'gender'       => $request->gender,
             ]);
 
             $employee->update([
-                'user_id' => $user->id ,
-                'department_id' => $request->department_id ,
+                'department_id'   => $request->department_id,
                 'work_start_time' => $request->work_start_time,
-                'work_end_time' => $request->work_end_time,
-                'working_days' => $request->working_days,
-                'hire_date' => $request->hire_date,
+                'work_end_time'   => $request->work_end_time,
+                'working_days'    => $request->working_days,
+                'status'          => $request->status,
                 'short_biography' => $request->short_biography,
-                'status' => $request->status,
             ]);
 
             $doctor->update([
-                'employee_id' => $employee->id ,
-                'qualification' => $request->qualification,
+                'qualification'    => $request->qualification,
                 'experience_years' => $request->experience_years,
+                'specialty_id'     => $request->specialty_id,
+                'consultation_fee' => $request->consultation_fee,
             ]);
 
             return response()->json(['data' => 1]);
         }
     }
+
 
 
 

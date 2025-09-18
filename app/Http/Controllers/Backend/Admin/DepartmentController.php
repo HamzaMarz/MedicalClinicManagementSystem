@@ -6,6 +6,7 @@ use App\Models\User;
 use App\Models\Doctor;
 use App\Models\Employee;
 use App\Models\JobTitle;
+use App\Models\Specialty;
 use App\Models\ClinicInfo;
 use App\Models\Department;
 use Illuminate\Http\Request;
@@ -17,7 +18,8 @@ class DepartmentController extends Controller{
 
 
     public function addDepartment(){
-        return view('Backend.admin.departments.add');
+        $specialties = Specialty::all();
+        return view('Backend.admin.departments.add' , compact('specialties'));
     }
 
 
@@ -25,10 +27,15 @@ class DepartmentController extends Controller{
         if(Department::where('name' , $request->name)->exists()){
             return response()->json(['data' => 0]);
         }else{
-            Department::create([
+            $department = Department::create([
                 'name' => $request->name,
                 'description' => $request->description,
             ]);
+
+            // ربط التخصصات
+            if ($request->has('specialties') && is_array($request->specialties)) {
+                $department->specialties()->attach($request->specialties);
+            }
 
             return response()->json(['data' => 1]);
         }
@@ -47,11 +54,16 @@ class DepartmentController extends Controller{
 
 
 
-    public function descriptionDepartment($id){
-        $department = Department::with('doctors')->findOrFail($id);
-        $departmentIds = Department::where('id', $id)->pluck('id');
-        $count_doctor = Doctor::whereIn('department_id', $departmentIds)->count();
-        return view('Backend.admin.departments.description', compact('department' , 'count_doctor'));
+    public function detailsDepartment($id){
+        $department = Department::with(['doctors'])->findOrFail($id);
+        $count_specialties = $department->specialties()->count();
+        $count_doctor = $department->doctors()->count();
+
+        return view('Backend.admin.departments.details', compact(
+            'department',
+            'count_specialties',
+            'count_doctor'
+        ));
     }
 
 
@@ -60,7 +72,8 @@ class DepartmentController extends Controller{
 
     public function editDepartment($id){
         $department = Department::findOrFail($id);
-        return view('Backend.admin.departments.edit', compact('department'));
+        $specialties = Specialty::all();
+        return view('Backend.admin.departments.edit', compact('department' , 'specialties'));
     }
 
 
@@ -71,30 +84,33 @@ class DepartmentController extends Controller{
             'description' => $request->description,
         ]);
 
+        $department->specialties()->sync($request->specialties ?? []);
+
         return response()->json(['data' => 1]);
     }
 
 
 
-
     public function deleteDepartment($id){
         $department = Department::findOrFail($id);
-        $doctors = Doctor::where('department_id', $id)->get();
+        $employees = Employee::where('department_id', $id)->get();
 
-        foreach ($doctors as $doctor) {
-            $employee = Employee::find($doctor->employee_id);
+        foreach ($employees as $employee) {
+            $doctor = Doctor::where('employee_id', $employee->id)->first();
 
-            if ($employee) {
-                if ($employee->user_id) {
-                    User::where('id', $employee->user_id)->delete();
-                }
-                $employee->delete();
+            if ($doctor) {
+                $doctor->delete();
             }
-            $doctor->delete();
+
+            if ($employee->user_id) {
+                User::where('id', $employee->user_id)->delete();
+            }
+
+            $employee->delete();
         }
 
+        $department->specialties()->detach();
         $department->delete();
-
         return response()->json(['success' => true]);
     }
 
@@ -102,10 +118,38 @@ class DepartmentController extends Controller{
 
 
 
+
     public function viewDepartmentsManagers(){
         $job_title_id = JobTitle::where('name' , 'Department Manager')->pluck('id')->first();
-        $departmentsManagers = EmployeeJobTitle::where('job_title_id' , $job_title_id)->paginate(8);
-        return view('Backend.admin.departments.departments_managers.view' , compact('departmentsManagers'));
+        $departments_managers = EmployeeJobTitle::where('job_title_id' , $job_title_id)->paginate(8);
+        return view('Backend.admin.departments.departments_managers.view' , compact('departments_managers'));
+    }
+
+
+
+
+    public function searchDepartmentsManagers(Request $request){
+        $keyword = trim((string) $request->input('keyword', ''));
+        $filter  = $request->input('filter', '');
+
+        $query = User::role('department_manager');
+
+        if ($keyword !== '') {
+            if ($filter === 'name') {
+                $query->where('name', 'like', $keyword.'%');
+            }
+        }
+
+        $departments_managers = $query->orderBy('id')->paginate(12);
+
+        $html = view('Backend.admin.departments.departments_managers.search', compact('departments_managers'))->render();
+
+        return response()->json([
+            'html'       => $html,
+            'count'      => $departments_managers->total(),
+            'searching'  => $keyword !== '',
+            'pagination' => $departments_managers->links('pagination::bootstrap-4')->render(),
+        ]);
     }
 
 
@@ -131,7 +175,7 @@ class DepartmentController extends Controller{
             'clinic'      => $clinic,
             'time_start'  => $clinic->work_start,
             'time_end'    => $clinic->work_end,
-            'work_days'   => $clinic->work_days, 
+            'work_days'   => $clinic->work_days,
         ]);
     }
 

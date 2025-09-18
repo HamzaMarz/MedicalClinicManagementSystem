@@ -5,30 +5,34 @@ namespace App\Http\Controllers\Backend\Admin;
 use App\Models\User;
 use App\Models\Medication;
 use Illuminate\Http\Request;
-use App\Models\MedicineStock;
 use App\Models\MedicationRequest;
-use App\Models\MedicationPharmacy;
 use App\Http\Controllers\Controller;
-use App\Notifications\NewMedicationRequestNotification;
+use App\Notifications\store_supervisor\NewMedicationRequestNotification;
 
 class MedicationRequestController extends Controller{
 
-    public function addMedicationRequest(){
+    /* ============================
+     *   طلبات الصيدلية
+     * ============================ */
+
+    public function createPharmacyRequest(){
         $medications = Medication::all();
-        return view('Backend.admin.requests.addMedication' , compact('medications'));
+        return view('Backend.admin.requests.pharmacy.add', compact('medications'));
     }
 
 
-
-    // 1. الأدمن يعمل طلب
-    public function storeMedicationRequest(Request $request){
+    public function storePharmacyRequest(Request $request){
         $medication = Medication::findOrFail($request->medication_id);
-        MedicationRequest::create([
-            'medication_id' => $medication->id,
-            'admin_id' => auth()->id(),
+
+        $medicationRequest = MedicationRequest::create([
+            'medication_id'      => $medication->id,
+            'admin_id'           => auth()->id(),
             'requested_quantity' => $request->quantity,
-            'status' => 'pending',
+            'request_type'       => 'pharmacy',
+            'unit_type'          => 'box',
+            'status'             => 'pending',
         ]);
+
 
         $supervisors = User::whereHas('employee.jobTitles', function ($query) {
             $query->where('name', 'Store Supervisor');
@@ -36,7 +40,53 @@ class MedicationRequestController extends Controller{
 
         foreach ($supervisors as $supervisor) {
             $supervisor->notify(
-                new NewMedicationRequestNotification($medication, $request->quantity, auth()->user())
+                new NewMedicationRequestNotification($medicationRequest->id, $medication, $request->quantity, auth()->user())
+            );
+        }
+
+        return response()->json(['data' => 1]);
+    }
+
+    // عرض كل طلبات الصيدلية
+    // public function pharmacyRequests(){
+    //     $requests = MedicationRequest::with('medication')
+    //         ->where('request_type', 'pharmacy')
+    //         ->orderBy('created_at', 'desc')
+    //         ->paginate(12);
+
+    //     return view('Backend.admin.requests.pharmacy.index', compact('requests'));
+    // }
+
+
+    /* ============================
+     *   طلبات المخزن
+     * ============================ */
+
+    public function createStoreRequest(){
+        $medications = Medication::all();
+        return view('Backend.admin.requests.store.add', compact('medications'));
+    }
+
+
+    public function storeStoreRequest(Request $request){
+        $medication = Medication::findOrFail($request->medication_id);
+
+        $medicationRequest = MedicationRequest::create([
+            'medication_id'      => $medication->id,
+            'admin_id'           => auth()->id(),
+            'requested_quantity' => $request->quantity,
+            'request_type'       => 'store',
+            'unit_type'          => 'carton',
+            'status'             => 'pending',
+        ]);
+
+        $supervisors = User::whereHas('employee.jobTitles', function ($query) {
+            $query->where('name', 'Pharmacy Supervisor');
+        })->get();
+
+        foreach ($supervisors as $supervisor) {
+            $supervisor->notify(
+                new NewMedicationRequestNotification($medicationRequest->id, $medication, $request->quantity, auth()->user())
             );
         }
 
@@ -47,11 +97,8 @@ class MedicationRequestController extends Controller{
 
 
 
-
-    // عدل واعتمدها
-    // public function index(){
-    //     $requests = MedicationRequest::with('medication')->orderBy('created_at', 'desc')->paginate(12);
-    //     return view('Backend.admin.requests.index', compact('requests'));
-    // }
-
+    public function medicationRequests($id){
+        $requests = MedicationRequest::with('medication')->findOrFail($id);
+        return view('Backend.admin.requests.medicationRequests', compact('requests'));
+    }
 }

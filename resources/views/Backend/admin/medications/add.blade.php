@@ -51,7 +51,7 @@
                             <div class="row">
 
                                 <div class="col-sm-6">
-                                    <label>Medication Name <span class="text-danger">*</span></label>
+                                    <label>Medication Name (Generic) <span class="text-danger">*</span></label>
                                     <div class="input-group">
                                         <div class="input-group-prepend">
                                             <span class="input-group-text"><i class="fas fa-capsules"></i></span>
@@ -114,29 +114,45 @@
                                     </div>
                                 </div>
 
-                                <div class="col-sm-6">
-                                    <label>Selling Price <span class="text-danger">*</span></label>
+                            </div>
+                        </div>
+                    </div>
+
+                    {{-- Price & Description --}}
+                    <div class="card">
+                        <div class="card-header">Price & Description</div>
+                        <div class="card-body">
+                            <div class="row">
+                                <!-- Selling Price -->
+                                <div class="col-sm-6 mb-3" style="margin-bottom:10px;">
+                                    <label for="selling_price">Selling Price <span class="text-danger">*</span></label>
                                     <div class="input-group">
                                         <div class="input-group-prepend">
                                             <span class="input-group-text"><i class="fas fa-dollar-sign"></i></span>
                                         </div>
-                                        <input class="form-control" type="number" id="selling_price" name="selling_price">
+                                        <input
+                                            type="number"
+                                            class="form-control"
+                                            id="selling_price"
+                                            name="selling_price"
+                                            placeholder="Enter selling price">
                                     </div>
                                 </div>
 
+                                <!-- Medication Description -->
+                                <div class="col-sm-12" style="margin-top:10px;">
+                                    <label for="description">Description</label>
+                                    <textarea
+                                        id="description"
+                                        name="description"
+                                        class="form-control"
+                                        rows="4"
+                                        placeholder="Write a short description about the medication..."></textarea>
+                                </div>
                             </div>
                         </div>
                     </div>
 
-                    {{-- Description --}}
-                    <div class="card">
-                        <div class="card-header">Medication Description</div>
-                        <div class="card-body">
-                            <div class="form-group">
-                                <textarea id="description" name="description" class="form-control" rows="4" placeholder="Write a short description about the medication...">{{ old('description') }}</textarea>
-                            </div>
-                        </div>
-                    </div>
 
                     <div class="text-center m-t-20" style="margin-top:20px;">
                         <button type="submit" class="btn btn-primary submit-btn" style="text-transform: none !important;">

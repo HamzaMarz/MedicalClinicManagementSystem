@@ -2,10 +2,8 @@
 
 namespace App\Http\Controllers\Backend\Admin;
 
-use App\Models\Pharmacy;
-use App\Models\Medication;
+
 use Illuminate\Http\Request;
-use App\Models\MedicineStock;
 use App\Models\MedicationPharmacy;
 use App\Http\Controllers\Controller;
 
@@ -34,24 +32,36 @@ class PharmacyController extends Controller{
                     break;
 
                 case 'quantity':
-                    $medications->where('quantity', 'like', "{$keyword}%");
+                    $medications->where('quantity', 'like', "{$keyword}");
                     break;
 
                 case 'status':
-                    if (strtolower($keyword) === 'valid') {
-                        $medications->whereHas('medication', function ($q) {
-                            $q->whereDate('expiry_date', '>=', now()->toDateString());
-                        });
-                    } elseif (strtolower($keyword) === 'expired') {
-                        $medications->whereHas('medication', function ($q) {
-                            $q->whereDate('expiry_date', '<', now()->toDateString());
-                        });
-                    }
+                    // نجيب كل النتائج أولاً
+                    $medications = $medications->get()->filter(function ($item) use ($keyword) {
+                        return stripos($item->medication->status, $keyword) !== false;
+                    });
+
+                    // نرجع نعمل paginate يدوي
+                    $page     = request()->get('page', 1);
+                    $perPage  = 12;
+                    $offset   = ($page * $perPage) - $perPage;
+
+                    $paginated = new \Illuminate\Pagination\LengthAwarePaginator(
+                        $medications->slice($offset, $perPage)->values(),
+                        $medications->count(),
+                        $perPage,
+                        $page,
+                        ['path' => request()->url(), 'query' => request()->query()]
+                    );
+
+                    $medications = $paginated;
                     break;
             }
         }
 
-        $medications = $medications->orderBy('id')->paginate(12);
+        if ($filter !== 'status') {
+            $medications = $medications->orderBy('id')->paginate(12);
+        }
 
         $view       = view('Backend.admin.pharmacy.searchPharmacyInventory', compact('medications'))->render();
         $pagination = $medications->total() > 12 ? $medications->links('pagination::bootstrap-4')->render() : '';
@@ -66,52 +76,4 @@ class PharmacyController extends Controller{
 
 
 
-
-
-
-
-    // احذف لما تتأكد
-    // public function storeMedicationToPharmacy(Request $request){
-    //     $name     = $request->name;
-    //     $quantity = (int) $request->quantity;
-
-    //     $medicineStock = MedicineStock::whereHas('medication', function ($q) use ($name) {
-    //         $q->where('name', $name);
-    //     })->first();
-
-    //     if (!$medicineStock) {
-    //         return response()->json(['data' => 0]);   // الدواء غير موجود
-
-    //     }
-
-
-    //     if ($medicineStock->remaining_quantity  < $quantity) {
-    //         return response()->json(['data' => 1]);   // الكمية غير متوفرة
-    //     }
-
-    //     $medicineStock->remaining_quantity -= $quantity;
-    //     $medicineStock->save();
-
-
-    //     $pharmacyMed = MedicationPharmacy::firstOrCreate([
-    //         'medication_id' => $medicineStock->medication_id,
-    //         'pharmacy_id' => 1],
-    //         ['quantity' => 0]
-    //     );
-
-    //     $pharmacyMed->quantity += $quantity;
-    //     $pharmacyMed->save();
-
-    //     return response()->json(['data' => 2]);
-    // }
-
-
-
-
-
-
-    // public function pharmacyView(){
-    //     $pharmacy = Pharmacy::first();
-    //     return view('Backend.admin.pharmacy.view' , compact('pharmacy'));
-    // }
 }

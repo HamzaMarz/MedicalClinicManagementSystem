@@ -9,7 +9,8 @@ use App\Models\MedicationRequest;
 use App\Models\MedicationPharmacy;
 use Illuminate\Support\Facades\DB;
 use App\Http\Controllers\Controller;
-use App\Notifications\MedicationRequestApprovedNotification;
+use App\Notifications\admin\MedicationRequestApprovedNotification;
+use App\Notifications\admin\MedicationRequestRejectedNotification;
 
 class RequestController extends Controller{
 
@@ -103,6 +104,19 @@ class RequestController extends Controller{
             'note' => $request->note,
             'supervisor_id' => auth()->id(),
         ]);
+
+        DB::table('notifications')
+        ->where('type', 'App\Notifications\NewMedicationRequestNotification')
+        ->where('notifiable_type', 'App\Models\User')
+        ->whereRaw("JSON_EXTRACT(data, '$.medication_id') = ?", [$req->medication_id])
+        ->whereNull('read_at')
+        ->update(['read_at' => now()]);
+
+
+        $admin = User::role('admin')->first();
+        if ($admin) {
+            $admin->notify(new MedicationRequestRejectedNotification($req, auth()->user()));
+        }
 
         return response()->json(['success' => true]);
     }

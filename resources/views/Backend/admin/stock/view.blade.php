@@ -55,9 +55,9 @@
                         <thead>
                             <tr>
                                 <th>ID</th>
+                                <th>Batch Number</th>
                                 <th>Medicine Name</th>
                                 <th>Quantity</th>
-                                <th>Batch Number</th>
                                 <th>Remaining Quantity</th>
                                 <th>Status</th>
                                 <th>Action</th>
@@ -68,9 +68,9 @@
                                 @foreach ($medicineStock as $med)
                                     <tr>
                                         <td>{{ $med->id }}</td>
+                                        <td>{{ $med->batch_number }}</td>
                                         <td>{{ $med->medication->name }}</td>
                                         <td>{{ $med->quantity }}</td>
-                                        <td>{{ $med->batch_number }}</td>
                                         <td>{{ $med->remaining_quantity }}</td>
                                         <td>
                                             @if($med->medication->status === 'Valid')

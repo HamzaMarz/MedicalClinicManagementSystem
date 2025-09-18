@@ -16,6 +16,10 @@ return new class extends Migration
             $table->unsignedBigInteger('admin_id'); // الأدمن اللي عمل الطلب
             $table->unsignedBigInteger('supervisor_id')->nullable(); // المشرف اللي بيرد
             $table->integer('requested_quantity'); // الكمية المطلوبة
+
+            $table->enum('request_type', ['pharmacy', 'store']); // نوع الطلب (صيدلية أو مخزن)
+            $table->enum('unit_type', ['box', 'carton']);        // وحدة القياس (علبة أو كرتونة)
+
             $table->enum('status', ['pending', 'approved', 'rejected'])->default('pending');
             $table->text('note')->nullable();
             $table->timestamps();

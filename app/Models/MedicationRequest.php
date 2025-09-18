@@ -11,6 +11,8 @@ class MedicationRequest extends Model{
         'admin_id',
         'supervisor_id',
         'requested_quantity',
+        'request_type',
+        'unit_type',
         'status',
         'note'
     ];

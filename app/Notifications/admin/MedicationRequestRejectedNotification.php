@@ -1,11 +1,11 @@
 <?php
 
-namespace App\Notifications;
+namespace App\Notifications\admin;
 
 use Illuminate\Bus\Queueable;
 use Illuminate\Notifications\Notification;
 
-class MedicationRequestApprovedNotification extends Notification
+class MedicationRequestRejectedNotification extends Notification
 {
     use Queueable;
 
@@ -27,12 +27,13 @@ class MedicationRequestApprovedNotification extends Notification
         return [
             'message'   => "The medication request of {$this->request->requested_quantity}
                             units of {$this->request->medication->name}
-                            has been approved and sent to the pharmacy by supervisor {$this->supervisor->name}.",
+                            has been rejected by supervisor {$this->supervisor->name}.",
             'request_id'    => $this->request->id,
             'medication_id' => $this->request->medication_id,
             'quantity'      => $this->request->requested_quantity,
             'supervisor_id' => $this->supervisor->id,
-            'image'         => 'assets/img/approved.png',
+            'image'         => 'assets/img/rejected.png',
+            'url'           => route('notifications_description_read', $this->request->id),
         ];
     }
 }

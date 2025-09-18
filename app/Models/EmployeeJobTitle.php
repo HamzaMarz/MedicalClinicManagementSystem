@@ -9,6 +9,7 @@ class EmployeeJobTitle extends Model{
     protected $fillable = [
         'employee_id',
         'job_title_id',
+        'hire_date',
     ];
 
     public function employee(){
@@ -18,5 +19,5 @@ class EmployeeJobTitle extends Model{
     public function job_title(){
         return $this->belongsTo(JobTitle::class);
     }
-    
+
 }

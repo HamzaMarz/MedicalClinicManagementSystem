@@ -209,21 +209,22 @@
                     },
                     success: function (response) {
                         if (response.data == 0) {
-                            Swal.fire({
-                                title: 'Error!',
-                                text: 'This Appointment Already Exists',
-                                icon: 'error',
-                                confirmButtonText: 'OK'
-                            });
-                        } else if (response.data == 1) {
-                            Swal.fire({
-                                title: 'Success',
-                                text: 'Appointment Has Been Updated Successfully',
-                                icon: 'success',
-                                confirmButtonText: 'OK'
-                            }).then(() => {
-                                window.location.href = '/admin/view/appointments';
-                            });
+                            Swal.fire('Error!', 'This patient already has an appointment at this time', 'error');
+                        }
+                        else if (response.data == 1) {
+                            Swal.fire('Warning', 'This appointment slot is already booked. Please choose another time', 'warning');
+                        }
+                        else if (response.data == 2) {
+                            Swal.fire('Error!', 'This appointment time has already passed. Please select another time', 'error');
+                        }
+                        else if (response.data == 3) {
+                            Swal.fire('Success', 'Appointment Has Been Updated Successfully', 'success')
+                                .then(() => {
+                                    window.location.href = '/admin/view/appointments';
+                                });
+                        }
+                        else {
+                            Swal.fire('Notice', 'Unexpected response, please try again', 'info');
                         }
                     }
                 });

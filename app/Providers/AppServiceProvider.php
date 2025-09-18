@@ -17,11 +17,22 @@ class AppServiceProvider extends ServiceProvider
     public function boot(): void{
         Schema::defaultStringLength(191);
 
-        View::composer('*', function ($view) {
+        View::composer([
+            'Backend.admin.layout.*',
+            'Backend.departments_managers.layout.*',
+            'Backend.doctors.layout.*',
+            'Backend.employees.layout.*',
+            'Backend.employees.accountants.layout.*',
+            'Backend.employees.nurses.layout.*',
+            'Backend.employees.pharmacists.layout.*',
+            'Backend.employees.receptionists.layout.*',
+            'Backend.employees.stores_supervisors.layout.*',
+            'Backend.patients.layout.*',
+        ], function ($view) {
             $currentUser = null;
 
             $admin = null;
-            $departmentManager = null;
+            $department_manager = null;
             $doctor = null;
 
             $storeSupervisor = null;
@@ -42,7 +53,7 @@ class AppServiceProvider extends ServiceProvider
                     $admin = $user;
 
                 } elseif ($user->hasRole('department_manager')) {
-                    $departmentManager = $user;
+                    $department_manager = $user;
 
                 } elseif ($user->hasRole('doctor')) {
                     $doctor = $user;
@@ -70,7 +81,7 @@ class AppServiceProvider extends ServiceProvider
             $view->with(compact(
                 'currentUser',
                 'admin',
-                'departmentManager',
+                'department_manager',
                 'doctor',
                 'storeSupervisor',
                 'accountant',
@@ -81,6 +92,7 @@ class AppServiceProvider extends ServiceProvider
                 'patient'
             ));
         });
+
 
     }
 }

@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Notifications;
+namespace App\Notifications\admin;
 
 use Illuminate\Bus\Queueable;
 use Illuminate\Contracts\Queue\ShouldQueue;
@@ -26,6 +26,7 @@ class MedicationExpiredNotification extends Notification{
                         ' has expired on ' . $this->medication->expiry_date,
             'medication_id' => $this->medication->id,
             'image'         => 'assets/img/expired.png',
+            'url' => route('notifications_description_medication_read', $this->medication->id),
         ];
     }
 }

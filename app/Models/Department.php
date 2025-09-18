@@ -11,8 +11,24 @@ class Department extends Model{
         'description',
     ];
 
+    public function specialties(){
+        return $this->belongsToMany(Specialty::class, 'department_specialty', 'department_id', 'specialty_id');
+    }
+
 
     public function doctors(){
-        return $this->hasMany(Doctor::class);
+        return $this->hasManyThrough(
+            Doctor::class,       // الموديل النهائي
+            Employee::class,     // الموديل الوسيط
+            'department_id',     // المفتاح في جدول employees
+            'employee_id',       // المفتاح في جدول doctors
+            'id',                // المفتاح في جدول departments
+            'id'                 // المفتاح في جدول employees
+        );
+    }
+
+
+    public function patients(){
+        return $this->belongsToMany(Patient::class, 'department_patients', 'department_id', 'patient_id')->withTimestamps();
     }
 }

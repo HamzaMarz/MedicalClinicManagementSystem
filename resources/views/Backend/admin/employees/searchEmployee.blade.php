@@ -3,9 +3,8 @@
         <tr>
             <td>{{ $employee->id }}</td>
             <td>{{ $employee->user->name }}</td>
-            <td>{{ $employee->department->name }}</td>
             <td>{{ $employee->jobTitles->pluck('name')->implode(' , ') }}</td>
-            <td>{{ $employee->user->email }}</td>
+            <td>{{ $employee->department->name }}</td>
             <td>{{ $employee->user->phone }}</td>
             <td>
                 @if($employee->status === 'active')
@@ -25,7 +24,7 @@
     @endforeach
 @else
     <tr>
-        <td colspan="8" class="p-4 text-center">
+        <td colspan="7" class="p-4 text-center">
             <strong style="font-size: 18px; color: gray;">No Employees Found</strong>
         </td>
     </tr>

@@ -13,4 +13,12 @@ class PrescriptionItem extends Model{
         'duration',
         'instructions',
     ];
+
+    public function prescription(){
+        return $this->belongsTo(Prescription::class);
+    }
+
+    public function medications(){
+        return $this->belongsTo(Medication::class, 'medicine_id');
+    }
 }

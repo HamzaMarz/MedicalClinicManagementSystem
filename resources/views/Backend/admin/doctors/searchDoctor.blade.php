@@ -4,7 +4,7 @@
             <div class="profile-widget">
                 <div class="doctor-img">
                     <a class="avatar" href="{{ Route('profile_doctor' , ['id' => $doctor->id]) }}">
-                        <img src="{{ $doctor->user->image ? asset($doctor->user->image) : asset('default-avatar.png') }}">
+                        <img src="{{ asset($doctor->user->image ?? 'assets/img/user.jpg') }}">
                     </a>
                 </div>
                 <div class="dropdown profile-action">

@@ -20,6 +20,7 @@ return new class extends Migration
             $table->unsignedBigInteger('job_title_id');
             $table->foreign('job_title_id')->references('id')->on('job_titles')->onDelete('cascade');
 
+            $table->date('hire_date')->nullable();
             $table->timestamps();
         });
     }

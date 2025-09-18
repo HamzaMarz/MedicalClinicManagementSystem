@@ -12,6 +12,7 @@ class Appointment extends Model{
         'department_id',
         'date',
         'time',
+        'consultation_fee',
         'status',
         'notes',
     ];

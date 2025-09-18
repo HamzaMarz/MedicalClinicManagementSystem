@@ -282,9 +282,9 @@
                         </div>
                     </div>
 
-                    {{-- 5) Notes --}}
+                    {{-- 5) Short Biography --}}
                     <div class="card">
-                        <div class="card-header">Notes</div>
+                        <div class="card-header">Notes (Appointment)</div>
                         <div class="card-body">
                             <div class="form-group">
                                 <label>Notes</label>

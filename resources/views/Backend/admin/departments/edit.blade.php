@@ -78,8 +78,31 @@
                         </div>
                     </div>
 
+                    {{-- التخصصات --}}
+                    <div class="card mt-3">
+                        <div class="card-header">Select Specialties for this Department</div>
+                        <div class="card-body">
+                            <label>Specialties <span class="text-danger">*</span></label>
+                            <div class="row">
+                                @foreach($specialties as $specialty)
+                                    <div class="col-md-6">
+                                        <div class="form-check">
+                                            <input type="checkbox" class="form-check-input"
+                                                name="specialties[]" value="{{ $specialty->id }}"
+                                                id="spec_{{ $specialty->id }}"
+                                                {{ $department->specialties->contains($specialty->id) ? 'checked' : '' }}>
+                                            <label class="form-check-label" for="spec_{{ $specialty->id }}">
+                                                {{ $specialty->name }}
+                                            </label>
+                                        </div>
+                                    </div>
+                                @endforeach
+                            </div>
+                        </div>
+                    </div>
+
                     <div class="text-center" style="margin-top:20px;">
-                        <button type="submit" class="px-5 btn btn-primary submit-btn editBtn rounded-pill" style="text-transform: none !important;">
+                        <button type="submit" class="btn btn-primary submit-btn addBtn px-5 rounded-pill" style="text-transform: none !important;">
                             Edit Department
                         </button>
                     </div>
@@ -95,16 +118,17 @@
 @section('js')
     <script>
         $(document).ready(function () {
-            $('.editBtn').click(function (e) {
+            $('.addBtn').click(function (e) {
                 e.preventDefault();
 
                 let name = $('#name').val().trim();
                 let description = $('#description').val().trim();
+                let specialties = $('input[name="specialties[]"]:checked').map(function(){ return this.value; }).get();
 
-                if(name === ''){
+                if(name === '' || specialties.length === 0){
                     Swal.fire({
                         title: 'Error!',
-                        text: ' Please Enter The Department Name',
+                        text: 'Please Enter All Required Fields',
                         icon: 'error',
                         confirmButtonText: 'OK'
                     });
@@ -116,6 +140,7 @@
                         _method: 'PUT',
                         name: name,
                         description: description,
+                        specialties: specialties,
                     },
                     headers: {
                         'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')

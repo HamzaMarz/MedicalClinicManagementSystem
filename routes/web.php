@@ -7,22 +7,36 @@ use App\Http\Controllers\Backend\Admin\DoctorController;
 use App\Http\Controllers\Backend\Admin\PatientController;
 use App\Http\Controllers\Backend\Admin\EmployeeController;
 use App\Http\Controllers\Backend\Admin\PharmacyController;
+use App\Http\Controllers\Backend\Admin\InsuranceController;
+use App\Http\Controllers\Backend\Admin\SpecialtyController as AdminSpecialtyController;
 use App\Http\Controllers\Backend\Admin\ClinicInfoController;
 use App\Http\Controllers\Backend\Admin\DepartmentController;
 use App\Http\Controllers\Backend\Admin\MedicationController;
 use App\Http\Controllers\Auth\AuthenticatedSessionController;
 use App\Http\Controllers\Backend\Admin\AppointmentController;
-use App\Http\Controllers\Backend\Admin\NotificationController as AdminNotificationController;
 use App\Http\Controllers\Backend\Admin\PrescriptionController;
+use App\Http\Controllers\Backend\Admin\PatientInvoiceController;
 use App\Http\Controllers\Backend\Admin\MedicationStockController;
 use App\Http\Controllers\Backend\Admin\MedicationRequestController;
+use App\Http\Controllers\Backend\Admin\PatientInvoicePaymentController;
+use App\Http\Controllers\Backend\DepartmentManager\SpecialtyController as ManagerSpecialtyController;
+use App\Http\Controllers\Backend\DepartmentManager\EmployeeController as ManagerEmployeeController;
+use App\Http\Controllers\Backend\DepartmentManager\DoctorController as ManagerDoctorController;
+use App\Http\Controllers\Backend\DepartmentManager\PatientController as ManagerPatientController;
+use App\Http\Controllers\Backend\DepartmentManager\AppointmentController as ManagerAppointmentController;
+use App\Http\Controllers\Backend\DepartmentManager\PrescriptionController as ManagerPrescriptionController;
+use App\Http\Controllers\Backend\DepartmentManager\PatientInsuranceController as ManagerPatientInsuranceController;
 use App\Http\Controllers\Backend\Employee\StoreSupervisor\RequestController;
+use App\Http\Controllers\Backend\Doctor\PatientController as DoctorPatientController;
+use App\Http\Controllers\Backend\Doctor\PrescriptionController as DoctorPrescriptionController;
 use App\Http\Controllers\Backend\Admin\DashboardController as AdminDashboardController;
 use App\Http\Controllers\Backend\Doctor\DashboardController as DoctorDashboardController;
 use App\Http\Controllers\Backend\Patient\DashboardController as PatientDashboardController;
+use App\Http\Controllers\Backend\Admin\NotificationController as AdminNotificationController;
 use App\Http\Controllers\Backend\Employee\Nurse\DashboardController as NurseDashboardController;
 use App\Http\Controllers\Backend\DepartmentManager\DashboardController as ManagerDashboardController;
 use App\Http\Controllers\Backend\Employee\Accountant\DashboardController as AccountantDashboardController;
+use App\Http\Controllers\Backend\Employee\Pharmacist\DashboardController as pharmacistDashboardController;
 use App\Http\Controllers\Backend\Employee\Receptionist\DashboardController as ReceptionistDashboardController;
 use App\Http\Controllers\Backend\Employee\StoreSupervisor\DashboardController as StoreSupervisorDashboardController;
 use App\Http\Controllers\Backend\Employee\StoreSupervisor\NotificationController as StoreSupervisorNotificationController;
@@ -65,7 +79,8 @@ Route::prefix('admin')->middleware(['auth', 'verified', 'role:admin'])->group(fu
     Route::get('/add/department' ,[DepartmentController::class , 'addDepartment'])->name('add_department');
     Route::post('/store/department' ,[DepartmentController::class , 'storeDepartment'])->name('store_department');
     Route::get('/view/departments' ,[DepartmentController::class , 'viewDepartments'])->name('view_departments');
-    Route::get('/description/department/{id}' ,[DepartmentController::class , 'descriptionDepartment'])->name('description_department');
+    Route::get('/search/departments/managers',[DepartmentController::class , 'searchDepartmentsManagers'])->name('search_departments_managers');
+    Route::get('/details/department/{id}' ,[DepartmentController::class , 'detailsDepartment'])->name('details_department');
     Route::get('/edit/department/{id}' ,[DepartmentController::class , 'editDepartment'])->name('edit_department');
     Route::put('/update/department/{id}' ,[DepartmentController::class , 'updateDepartment'])->name('update_department');
     Route::delete('/delete/department/{id}' ,[DepartmentController::class , 'deleteDepartment'])->name('delete_department');
@@ -77,6 +92,16 @@ Route::prefix('admin')->middleware(['auth', 'verified', 'role:admin'])->group(fu
     Route::delete('/delete/department-manager/{id}' ,[DepartmentController::class , 'deleteDepartmentManager'])->name('delete_department_manager');
 
 
+    //Specialty
+    Route::get('/add/specialty' ,[AdminSpecialtyController::class , 'addSpecialty'])->name('add_specialty');
+    Route::post('/store/specialty' ,[AdminSpecialtyController::class , 'storeSpecialty'])->name('store_specialty');
+    Route::get('/view/specialties' ,[AdminSpecialtyController::class , 'viewSpecialties'])->name('view_specialties');
+    Route::get('/details/specialty/{id}' ,[AdminSpecialtyController::class , 'detailsSpecialty'])->name('details_specialty');
+    Route::get('/edit/specialty/{id}' ,[AdminSpecialtyController::class , 'editSpecialty'])->name('edit_specialty');
+    Route::put('/update/specialty/{id}' ,[AdminSpecialtyController::class , 'updateSpecialty'])->name('update_specialty');
+    Route::delete('/delete/specialty/{id}' ,[AdminSpecialtyController::class , 'deleteSpecialty'])->name('delete_specialty');
+
+
     //Employee
     Route::get('/add/employee' ,[EmployeeController::class , 'addEmployee'])->name('add_employee');
     Route::post('/store/employee',[EmployeeController::class , 'storeEmployee'])->name('store_employee');
@@ -86,7 +111,7 @@ Route::prefix('admin')->middleware(['auth', 'verified', 'role:admin'])->group(fu
     Route::get('/edit/employee/{id}' ,[EmployeeController::class , 'editEmployee'])->name('edit_employee');
     Route::put('/update/employee/{id}' ,[EmployeeController::class , 'updateEmployee'])->name('update_employee');
     Route::delete('/delete/employee/{id}' ,[EmployeeController::class , 'deleteEmployee'])->name('delete_employee');
-
+    Route::get('/get-specialties-by-department/{department_id}', [EmployeeController::class, 'getSpecialtiesByDepartment']);
 
     //Doctor
     Route::get('/add/doctor' ,[DoctorController::class , 'addDoctor'])->name('add_doctor');
@@ -122,7 +147,7 @@ Route::prefix('admin')->middleware(['auth', 'verified', 'role:admin'])->group(fu
     Route::post('/store/appointment',[AppointmentController::class , 'storeAppointment'])->name('store_appointment');
     Route::get('/view/appointments' ,[AppointmentController::class , 'viewAppointments'])->name('view_appointments');
     Route::get('/search/appointments',[AppointmentController::class , 'searchAppointments'])->name('search_appointments');
-    Route::get('/description/appointment/{id}',[AppointmentController::class , 'descriptionAppointment'])->name('description_appointment');
+    Route::get('/details/appointment/{id}',[AppointmentController::class , 'detailsAppointment'])->name('details_appointment');
     Route::get('/edit/appointment/{id}' ,[AppointmentController::class , 'editAppointment'])->name('edit_appointment');
     Route::put('/update/appointment/{id}' ,[AppointmentController::class , 'updateAppointment'])->name('update_appointment');
     Route::delete('/delete/appointment/{id}' ,[AppointmentController::class ,'deleteAppointment'])->name('delete_appointment');
@@ -130,19 +155,12 @@ Route::prefix('admin')->middleware(['auth', 'verified', 'role:admin'])->group(fu
     Route::get('/search/patients', [PatientController::class, 'searchPatients'])->name('search_patients');
 
 
-    //Pharmacy
-    Route::get('/view/pharmacy/inventory', [PharmacyController::class, 'viewPharmacyInventory'])->name('view_pharmacy_inventory');
-    Route::get('/search/pharmacy/inventory',[PharmacyController::class , 'searchPharmacyInventory'])->name('search_pharmacy_inventory');
-
-    Route::get('/pharmacy/view', [PharmacyController::class, 'pharmacyView'])->name('pharmacy_view'); // عدل هنا
-
-
     //Medication
     Route::get('/add/medication' ,[MedicationController::class , 'addMedication'])->name('add_medication');
     Route::post('/store/medication',[MedicationController::class , 'storeMedication'])->name('store_medication');
     Route::get('/view/medications' ,[MedicationController::class , 'viewMedications'])->name('view_medications');
     Route::get('/search/medications',[MedicationController::class , 'searchMedications'])->name('search_medications');
-    Route::get('/description/medication/{id}',[MedicationController::class , 'descriptionMedication'])->name('description_medication');
+    Route::get('/details/medication/{id}',[MedicationController::class , 'detailsMedication'])->name('details_medication');
     Route::get('/edit/medication/{id}' ,[MedicationController::class , 'editMedication'])->name('edit_medication');
     Route::put('/update/medication/{id}' ,[MedicationController::class , 'updateMedication'])->name('update_medication');
     Route::delete('/medication/{id}' ,[MedicationController::class , 'deleteMedication'])->name('delete_medication');
@@ -154,51 +172,59 @@ Route::prefix('admin')->middleware(['auth', 'verified', 'role:admin'])->group(fu
     Route::delete('/medication/force-delete/{id}', [MedicationController::class, 'forceDeleteMedication'])->name('force_delete_medication');
     Route::delete('/medications/remove-all', [MedicationController::class, 'forceDeleteAllMedications'])->name('force_delete_all_medications');
 
+
+    //Pharmacy
+    Route::get('/view/pharmacy/inventory', [PharmacyController::class, 'viewPharmacyInventory'])->name('view_pharmacy_inventory');
+    Route::get('/search/pharmacy/inventory',[PharmacyController::class , 'searchPharmacyInventory'])->name('search_pharmacy_inventory');
+
+
     //Prescription
     Route::get('/view/prescriptions' ,[PrescriptionController::class , 'viewPrescriptions'])->name('view_prescriptions');
-    Route::get('/description/prescription/{id}',[PrescriptionController::class , 'descriptionPrescription'])->name('description_prescription');
+    Route::get('/search/prescriptions',[PrescriptionController::class , 'searchPrescriptions'])->name('search_prescriptions');
+    Route::get('/view/items/prescriptions/{id}',[PrescriptionController::class , 'viewItemsPrescriptions'])->name('view_items_prescription');
+    Route::delete('/delete/prescription/{id}',[PrescriptionController::class , 'deletePrescription']);
 
 
     //Stock
-    // Route::get('/add/medication/to/Stock' ,[MedicationStockController::class , 'addMedicationToStock'])->name('add_medication_to_stock');
-    // Route::post('/store/medication/to/Stock',[MedicationStockController::class , 'storeMedicationToStock'])->name('store_medication_to_stock');
-    // Route::get('/generate-batch-number',[MedicationStockController::class , 'generateBatchNumber'])->name('generate_batch_number');
-    Route::get('/view/stock' ,[MedicationStockController::class , 'viewStock'])->name('view_stock');
+    Route::get('/view/stock/inventory' ,[MedicationStockController::class , 'viewStockInventory'])->name('view_stock_inventory');
+    Route::get('/stock/inventory/add', [MedicationStockController::class, 'stockInventoryAdd'])->name('stock_inventory_add');
+    Route::post('/stock/inventory/store', [MedicationStockController::class, 'stockInventoryStore'])->name('stock_inventory_store');
 
-    // Route::get('/description/stock/{id}',[MedicationStockController::class , 'descriptionStock'])->name('description_stock');
-    // Route::get('/edit/stock/{id}' ,[MedicationStockController::class , 'editStock'])->name('edit_stock');
-    // Route::put('/update/stock/{id}' ,[MedicationStockController::class , 'updateStock'])->name('update_stock');
-    // Route::delete('/delete/stock/{id}' ,[MedicationStockController::class , 'deleteStock'])->name('delete_stock');
 
 
     //Medication Requests
-    Route::get('/add/medication/request', [MedicationRequestController::class, 'addMedicationRequest'])->name('add_medication_request');
-    Route::post('/store/medication/request', [MedicationRequestController::class, 'storeMedicationRequest'])->name('store_medication_request');
-    Route::get('/medication/requests', [MedicationRequestController::class, 'index'])->name('medication_requests');
+    Route::get('/create/pharmacy/request', [MedicationRequestController::class, 'createPharmacyRequest'])->name('create_pharmacy_request');
+    Route::post('/store/pharmacy/request', [MedicationRequestController::class, 'storePharmacyRequest'])->name('store_pharmacy_request');
+
+    Route::get('/create/store/request', [MedicationRequestController::class, 'createStoreRequest'])->name('create_store_request');
+    Route::post('/store/store/request', [MedicationRequestController::class, 'storeStoreRequest'])->name('store_store_request');
+
+    Route::get('/medication/requests', [MedicationRequestController::class, 'medicationRequests'])->name('medication_requests');
+
     Route::post('/medication/request/{id}/approve', [MedicationRequestController::class, 'approve'])->name('approve_medication_request');
     Route::post('/medication/request/{id}/reject', [MedicationRequestController::class, 'reject'])->name('reject_medication_request');
 
 
+
     //***Finance***//
 
-    //patient invoice
-    // Route::get('/view/invoices' ,[PatientInvoiceController::class , 'viewInvoices'])->name('view_invoices');
-    // Route::get('/details/invoice/{id}' ,[PatientInvoiceController::class , 'detailsInvoice'])->name('details_invoice');
-    // Route::get('/edit/invoice/{id}' ,[PatientInvoiceController::class , 'editInvoice'])->name('edit_invoice');
-    // Route::put('/update/invoice/{id}' ,[PatientInvoiceController::class , 'updateInvoice'])->name('update_invoice');
-    // Route::delete('/delete/invoice/{id}' ,[PatientInvoiceController::class , 'deleteInvoice'])->name('delete_invoice');
+    //Patient invoice
+    Route::get('/view/patients/invoices' ,[PatientInvoiceController::class , 'viewPatientsInvoices'])->name('view_patients_invoices');
+    Route::get('/search/patients/invoices', [PatientInvoiceController::class, 'searchPatientsInvoices'])->name('search_patients_invoices');
+    Route::get('/details/patient/invoice/{id}' ,[PatientInvoiceController::class , 'detailsPatientInvoice'])->name('details_patient_invoice');
+    Route::get('/edit/patient/invoice/{id}' ,[PatientInvoiceController::class , 'editPatientInvoice'])->name('edit_patient_invoice');
+    Route::put('/update/patient/invoice/{id}' ,[PatientInvoiceController::class , 'updatePatientInvoice'])->name('update_patient_invoice');
+    Route::delete('/delete/patient/invoice/{id}' ,[PatientInvoiceController::class , 'deletePatientInvoice'])->name('delete_patient_invoice');
 
 
-    // //patient payment
-    // Route::get('/view/payments' ,[PaymentController::class , 'viewPayments'])->name('view_payments');
-    // Route::get('/details/payment/{id}' ,[PaymentController::class , 'detailsPayment'])->name('details_payment');
-    // Route::get('/edit/payment/{id}' ,[PaymentController::class , 'editPayment'])->name('edit_payment');
-    // Route::put('/update/payment/{id}' ,[PaymentController::class , 'updatePayment'])->name('update_payment');
-    // Route::delete('/delete/payment/{id}' ,[PaymentController::class , 'deletePayment'])->name('delete_payment');
+    //Patient payment
+    Route::get('/view/patients/invoices/payments' ,[PatientInvoicePaymentController::class , 'viewPatientsInvoicesPayments'])->name('view_patients_invoices_payments');
+    Route::get('/details/patient/invoice/payment/{id}' ,[PatientInvoicePaymentController::class , 'detailsPatientInvoicePayment'])->name('details_patient_invoice_payment');
+    Route::delete('/delete/patient/invoice/payment/{id}' ,[PatientInvoicePaymentController::class , 'deletePatientInvoicePayment'])->name('delete_patient_invoice_payment');
 
-    // Route::get('/edit/payment/Details/{id}' ,[PaymentController::class , 'editPaymentDetails'])->name('edit_payment_Details');
-    // Route::put('/update/payment/Details/{id}' ,[PaymentController::class , 'updatePaymentDetails'])->name('update_payment_Details');
-    // Route::delete('/delete/payment/Details/{id}' ,[PaymentController::class , 'deletePaymentDetails'])->name('delete_payment_Details');
+    Route::get('/edit/payment/details/{id}' ,[PatientInvoicePaymentController::class , 'editPaymentDetails'])->name('edit_payment_details');
+    Route::put('/update/payment/details/{id}' ,[PatientInvoicePaymentController::class , 'updatePaymentDetails'])->name('update_payment_details');
+    Route::delete('/delete/payment/details/{id}' ,[PatientInvoicePaymentController::class , 'deletePaymentDetails'])->name('delete_payment_details');
 
 
     // //vendor invoice
@@ -221,12 +247,55 @@ Route::prefix('admin')->middleware(['auth', 'verified', 'role:admin'])->group(fu
     // Route::delete('/delete/expense/Details/{id}' ,[ExpenseController::class , 'deleteExpenseDetails'])->name('delete_expense_Details');
 
 
+
+    // Insurance
+    Route::get('/add/insurance-provider' ,[InsuranceController::class , 'addInsuranceProvider'])->name('add_insurance_provider');
+    Route::post('/store/insurance-provider' ,[InsuranceController::class , 'storeInsuranceProvider'])->name('store_insurance_provider');
+    Route::get('/view/insurances-providers' ,[InsuranceController::class , 'viewInsurancesProviders'])->name('view_insurances_providers');
+    Route::get('/search/insurances-providers' ,[InsuranceController::class , 'searchInsurancesProviders'])->name('search_insurances_providers');
+    Route::get('/details/insurance-provider/{id}' ,[InsuranceController::class , 'detailsInsuranceProvider'])->name('details_insurance_provider');
+    Route::get('/edit/insurance-provider/{id}' ,[InsuranceController::class , 'editInsuranceProvider'])->name('edit_insurance_provider');
+    Route::put('/update/insurance-provider/{id}' ,[InsuranceController::class , 'updateInsuranceProvider'])->name('update_insurance_provider');
+    Route::delete('/delete/insurance-provider/{id}' ,[InsuranceController::class , 'deleteInsuranceProvider'])->name('delete_insurance_provider');
+
+
+
+    // Patient Insurance
+    Route::get('/add/patient-insurance' ,[InsuranceController::class , 'addPatientInsurance'])->name('add_patient_insurance');
+    Route::post('/store/patient-insurance' ,[InsuranceController::class , 'storePatientInsurance'])->name('store_patient_insurance');
+    Route::get('/view/patients-insurances' ,[InsuranceController::class , 'viewPatientsInsurances'])->name('view_patients_insurances');
+    Route::get('/search/patients-insurances' ,[InsuranceController::class , 'searchPatientsInsurances'])->name('search_patients_insurances');
+    Route::get('/details/patient-insurance/{id}' ,[InsuranceController::class , 'detailsPatientInsurance'])->name('details_patient_insurance');
+    Route::get('/edit/patient-insurance/{id}' ,[InsuranceController::class , 'editPatientInsurance'])->name('edit_patient_insurance');
+    Route::put('/update/patient-insurance/{id}' ,[InsuranceController::class , 'updatePatientInsurance'])->name('update_patient_insurance');
+    Route::delete('/delete/patient-insurance/{id}' ,[InsuranceController::class , 'deleteInsuranceInsurance'])->name('delete_patient_insurance');
+
+
+    // Cliams
+    Route::get('/add/claim' ,[InsuranceController::class , 'addClaim'])->name('add_claim');
+    Route::post('/store/claim' ,[InsuranceController::class , 'storeClaim'])->name('store_claim');
+    Route::get('/view/claims' ,[InsuranceController::class , 'viewClaims'])->name('view_claims');
+    Route::get('/search/claims' ,[InsuranceController::class , 'searchClaims'])->name('search_claims');
+    Route::get('/details/claim/{id}' ,[InsuranceController::class , 'detailsClaim'])->name('details_claim');
+    Route::get('/edit/claim/{id}' ,[InsuranceController::class , 'editClaim'])->name('edit_claim');
+    Route::put('/update/claim/{id}' ,[InsuranceController::class , 'updateClaim'])->name('update_claim');
+    Route::delete('/delete/claim/{id}' ,[InsuranceController::class , 'deleteClaim'])->name('delete_claim');
+
+
     // //Reports
     // Route::get('/view/reports' ,[ReportController::class , 'viewReports'])->name('view_reports');
 
     // Notifications
-    Route::get('/notifications/read/{id}', [AdminNotificationController::class, 'markAsRead'])->name('notifications.read');
 
+
+    Route::get('/notifications/description/medication/read/{id}', [AdminNotificationController::class, 'markExpiredAsRead'])
+    ->name('notifications_description_medication_read');   // إشعار الأدوية المنتهية
+
+    Route::get('/notifications/description/read/{id}', [AdminNotificationController::class, 'markDescriptionAsRead'])
+    ->name('notifications_description_read');  // إشعار موافقة/رفض  طلب
+
+    // Route::get('/notifications/description/rejected/read/{id}', [AdminNotificationController::class, 'markRejectedAsRead'])
+    // ->name('notifications_description_rejected_read');   // إشعار رفض الطلب
 });
 
 
@@ -234,13 +303,46 @@ Route::prefix('admin')->middleware(['auth', 'verified', 'role:admin'])->group(fu
 
 
 //Department Manager
-Route::prefix('department-manager')->middleware(['auth', 'verified', 'role:department_manager'])->group(function () {
+Route::prefix('department-manager')->name('department_manager_')->middleware(['auth', 'verified', 'role:department_manager'])->group(function () {
 
     //Dashboard
-    Route::get('/dashboard', [ManagerDashboardController::class, 'departmentManagerDashboard'])->name('department_manager_dashboard');
-    Route::get('/profile' , [ManagerDashboardController::class , 'departmentManagerProfile'])->name('department_manager_profile');
-    Route::get('/edit/profile' , [ManagerDashboardController::class , 'departmentManagerEditProfile'])->name('department_manager_edit_profile');
-    Route::put('/update/profile' , [ManagerDashboardController::class , 'departmentManagerUpdateProfile'])->name('department_manager_update_profile');
+    Route::get('/dashboard', [ManagerDashboardController::class, 'departmentManagerDashboard'])->name('dashboard');
+    Route::get('/profile' , [ManagerDashboardController::class , 'departmentManagerProfile'])->name('profile');
+    Route::get('/edit/profile' , [ManagerDashboardController::class , 'departmentManagerEditProfile'])->name('edit_profile');
+    Route::put('/update/profile' , [ManagerDashboardController::class , 'departmentManagerUpdateProfile'])->name('update_profile');
+
+
+
+    //Specialties
+    Route::get('/view/specialties', [ManagerSpecialtyController::class, 'viewSpecialties'])->name('view_specialties');
+    Route::get('/details/specialty/{id}' ,[ManagerSpecialtyController::class , 'detailsSpecialty'])->name('details_specialty');
+
+
+    //Employees
+    Route::get('/view/employees', [ManagerEmployeeController::class, 'viewEmployees'])->name('view_employees');
+
+
+    //Doctors
+    Route::get('/view/doctors', [ManagerDoctorController::class, 'viewDoctors'])->name('view_doctors');
+    Route::get('/view/doctors-schedules', [ManagerDoctorController::class, 'viewDoctorsSchedules'])->name('view_doctors_schedules');
+
+
+    //Patients
+    Route::get('/add/patient', [ManagerPatientController::class, 'addPatient'])->name('add_patient');
+    Route::get('/view/patients', [ManagerPatientController::class, 'viewPatients'])->name('view_patients');
+
+
+    //Appointments
+    Route::get('/add/appointment', [ManagerAppointmentController::class, 'addAppointment'])->name('add_appointment');
+    Route::get('/view/appointments', [ManagerAppointmentController::class, 'viewAppointments'])->name('view_appointments');
+
+
+    //Prescriptions
+    Route::get('/view/prescriptions', [ManagerPrescriptionController::class, 'viewPrescriptions'])->name('view_prescriptions');
+
+
+    //Patients Insurances
+    Route::get('/view/patients-insurances', [ManagerPatientInsuranceController::class, 'viewPatientsInsurances'])->name('view_patients_insurances');
 
 
 
@@ -252,13 +354,27 @@ Route::prefix('department-manager')->middleware(['auth', 'verified', 'role:depar
 
 
 //Doctor
-Route::prefix('doctor')->middleware(['auth', 'verified', 'role:doctor'])->group(function () {
+Route::prefix('doctor')->name('doctor_')->middleware(['auth', 'verified', 'role:doctor'])->group(function () {
 
     //Dashboard
-    Route::get('/dashboard', [DoctorDashboardController::class, 'doctorDashboard'])->name('doctor_dashboard');
-    Route::get('/profile' , [DoctorDashboardController::class , 'doctorProfile'])->name('doctor_profile');
-    Route::get('/edit/profile' , [DoctorDashboardController::class , 'doctorEditProfile'])->name('doctor_edit_profile');
-    Route::put('/update/profile' , [DoctorDashboardController::class , 'doctorUpdateProfile'])->name('doctor_update_profile');
+    Route::get('/dashboard', [DoctorDashboardController::class, 'doctorDashboard'])->name('dashboard');
+    Route::get('/profile' , [DoctorDashboardController::class , 'doctorProfile'])->name('profile');
+    Route::get('/edit/profile' , [DoctorDashboardController::class , 'doctorEditProfile'])->name('edit_profile');
+    Route::put('/update/profile' , [DoctorDashboardController::class , 'doctorUpdateProfile'])->name('update_profile');
+
+
+    //My Schedule
+    Route::get('/my-schedule', [DoctorDashboardController::class, 'mySchedule'])->name('mySchedule');
+
+
+    //Patients
+    Route::get('/add/patient', [DoctorPatientController::class, 'addPatient'])->name('add_patient');
+    Route::get('/view/patients', [DoctorPatientController::class, 'viewPatients'])->name('view_patients');
+
+
+    //Prescriptions
+    Route::get('/add/prescription', [DoctorPrescriptionController::class, 'addPrescription'])->name('add_prescription');
+    Route::get('/view/prescriptions', [DoctorPrescriptionController::class, 'viewPrescriptions'])->name('view_prescriptions');
 
 
 
@@ -271,14 +387,27 @@ Route::prefix('doctor')->middleware(['auth', 'verified', 'role:doctor'])->group(
 
 //Employees
 /** Accountants **/
-Route::prefix('employee/accountant')->middleware(['auth', 'verified', 'role:employee'])->group(function () {
+Route::prefix('employee/accountant')->name('accountant_')->middleware(['auth', 'verified', 'role:employee'])->group(function () {
 
     //Dashboard
-    Route::get('/dashboard', [AccountantDashboardController::class, 'accountantDashboard'])->name('accountant_dashboard');
-    Route::get('/profile' , [AccountantDashboardController::class , 'accountantProfile'])->name('accountant_profile');
-    Route::get('/edit/profile' , [AccountantDashboardController::class , 'accountantEditProfile'])->name('accountant_edit_profile');
-    Route::put('/update/profile' , [AccountantDashboardController::class , 'accountantUpdateProfile'])->name('accountant_update_profile');
+    Route::get('/dashboard', [AccountantDashboardController::class, 'accountantDashboard'])->name('dashboard');
+    Route::get('/profile' , [AccountantDashboardController::class , 'accountantProfile'])->name('profile');
+    Route::get('/edit/profile' , [AccountantDashboardController::class , 'accountantEditProfile'])->name('edit_profile');
+    Route::put('/update/profile' , [AccountantDashboardController::class , 'accountantUpdateProfile'])->name('update_profile');
 
+
+    //Employees
+    Route::get('/view/employees', [AccountantDashboardController::class, 'viewEmployees'])->name('view_employees');
+
+
+    //Insurances
+    Route::get('/view/insurances-providers', [AccountantDashboardController::class, 'viewInsurancesProviders'])->name('view_insurances_providers');
+    Route::get('/view/patients-insurances' , [AccountantDashboardController::class , 'viewPatientsInsurances'])->name('view_patients_insurances');
+
+
+    //Invoices
+    Route::get('/view/patients-invoices', [AccountantDashboardController::class, 'viewPatientsInvoices'])->name('view_patients_invoices');
+    Route::get('/view/patients-invoices/payments' , [AccountantDashboardController::class , 'viewPatientsInvoicesPayments'])->name('view_patients_invoices_payments');
 
 
 
@@ -287,7 +416,7 @@ Route::prefix('employee/accountant')->middleware(['auth', 'verified', 'role:empl
 
 
 /** Nurses **/
-Route::prefix('employee/nurse')->middleware(['auth', 'verified', 'role:employee'])->group(function () {
+Route::prefix('employee/nurse')->name('nurse_')->middleware(['auth', 'verified', 'role:employee'])->group(function () {
 
     //Dashboard
     Route::get('/dashboard', [NurseDashboardController::class, 'nurseDashboard'])->name('nurse_dashboard');
@@ -303,7 +432,7 @@ Route::prefix('employee/nurse')->middleware(['auth', 'verified', 'role:employee'
 
 
 /** Receptionists **/
-Route::prefix('employee/receptionist')->middleware(['auth', 'verified', 'role:employee'])->group(function () {
+Route::prefix('employee/receptionist')->name('receptionist_')->middleware(['auth', 'verified', 'role:employee'])->group(function () {
 
     //Dashboard
     Route::get('/dashboard', [ReceptionistDashboardController::class, 'receptionistDashboard'])->name('receptionist_dashboard');
@@ -318,8 +447,22 @@ Route::prefix('employee/receptionist')->middleware(['auth', 'verified', 'role:em
 
 
 
+/** Pharmacists **/
+Route::prefix('employee/pharmacist')->name('pharmacist_')->middleware(['auth', 'verified', 'role:employee'])->group(function () {
+
+    //Dashboard
+    Route::get('/dashboard', [pharmacistDashboardController::class, 'storeSupervisorDashboard'])->name('store_supervisor_dashboard');
+    Route::get('/profile' , [pharmacistDashboardController::class , 'storeSupervisorProfile'])->name('store_supervisor_profile');
+    Route::get('/edit/profile' , [pharmacistDashboardController::class , 'storeSupervisorEditProfile'])->name('store_supervisor_edit_profile');
+    Route::put('/update/profile' , [pharmacistDashboardController::class , 'storeSupervisorUpdateProfile'])->name('store_supervisor_update_profile');
+
+
+});
+
+
+
 /** StoreSupervisors **/
-Route::prefix('employee/store-supervisor')->middleware(['auth', 'verified', 'role:employee'])->group(function () {
+Route::prefix('employee/store-supervisor')->name('store-supervisor_')->middleware(['auth', 'verified', 'role:employee'])->group(function () {
 
     //Dashboard
     Route::get('/dashboard', [StoreSupervisorDashboardController::class, 'storeSupervisorDashboard'])->name('store_supervisor_dashboard');
@@ -336,15 +479,18 @@ Route::prefix('employee/store-supervisor')->middleware(['auth', 'verified', 'rol
 
 
     // Notifications
-    Route::get('/notifications/read/{id}', [StoreSupervisorNotificationController::class, 'markAsRead'])->name('notifications.read');
+    Route::get('/notifications/description/request/read/{id}', [StoreSupervisorNotificationController::class, 'markRequestAsRead'])
+    ->name('notifications_description_request_read');      // إشعار طلب جديد
+
+
 
 });
 
 
 
 
-
-Route::prefix('patient')->middleware(['auth', 'verified', 'role:patient'])->group(function () {
+/** Patient **/
+Route::prefix('patient')->name('patient_')->middleware(['auth', 'verified', 'role:patient'])->group(function () {
 
     //Dashboard
     Route::get('/dashboard', [PatientDashboardController::class, 'patientDashboard'])->name('patient_dashboard');

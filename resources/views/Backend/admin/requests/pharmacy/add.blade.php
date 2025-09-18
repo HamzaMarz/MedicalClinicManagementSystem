@@ -1,6 +1,6 @@
 @extends('Backend.admin.master')
 
-@section('title' , 'Request Medication Supply')
+@section('title' , 'Pharmacy Medication Supply Request')
 
 @section('content')
 
@@ -36,15 +36,14 @@
     <div class="content">
         <div class="row">
             <div class="col-lg-8 offset-lg-2">
-                <h4 class="page-title" style="margin-bottom: 30px;">Request Medication Supply</h4>
+                <h4 class="page-title" style="margin-bottom: 30px;">Pharmacy Medication Supply Request</h4>
             </div>
         </div>
 
         <div class="row">
             <div class="col-lg-8 offset-lg-2">
-                <form id="medicationForm" method="POST" action="{{ route('store_medication_request') }}" enctype="multipart/form-data">
+                <form id="medicationForm" method="POST" action="{{ route('store_pharmacy_request') }}" enctype="multipart/form-data">
                     @csrf
-
                     <div class="card">
                         <div class="card-header">Medication Supply to Pharmacy</div>
                         <div class="card-body">
@@ -56,7 +55,7 @@
                                         <div class="input-group-prepend">
                                             <span class="input-group-text"><i class="fas fa-capsules"></i></span>
                                         </div>
-                                        <select class="form-control" id="medication_id" name="medication_id" required>
+                                        <select class="form-control" id="medication_id" name="medication_id">
                                             <option value="" disabled selected hidden>Select Medication</option>
                                             @foreach($medications as $medication)
                                                 <option value="{{ $medication->id }}">{{ $medication->name }}</option>
@@ -72,6 +71,9 @@
                                             <span class="input-group-text"><i class="fas fa-capsules"></i></span>
                                         </div>
                                         <input class="form-control" type="number" id="quantity" name="quantity">
+                                        <div class="input-group-append">
+                                            <span class="input-group-text">Box</span>
+                                        </div>
                                     </div>
                                 </div>
 
@@ -81,7 +83,7 @@
 
                     <div class="text-center m-t-20" style="margin-top:20px;">
                         <button type="submit" class="btn btn-primary submit-btn" style="text-transform: none !important;">
-                            Request Medication Supply
+                            Send Request
                         </button>
                     </div>
 
@@ -99,7 +101,7 @@
         $('#medicationForm').on('submit', function (e) {
             e.preventDefault();
 
-            let medication_id = $('#medication_id').val(); // بدل name
+            let medication_id = $('#medication_id').val();
             let quantity      = $('#quantity').val();
 
             if (medication_id === '' || quantity === '') {
@@ -116,7 +118,7 @@
 
             $.ajax({
                 method: 'POST',
-                url: "{{ route('store_medication_request') }}",
+                url: "{{ route('store_pharmacy_request') }}",
                 data: formData,
                 processData: false,
                 contentType: false,
@@ -128,7 +130,7 @@
                             icon: 'success',
                             confirmButtonText: 'OK'
                         }).then(() => {
-                            window.location.href = '/admin/add/medication/request';
+                            window.location.href = '/admin/create/pharmacy/request';
                         });
                     }
                 },

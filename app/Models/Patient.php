@@ -36,4 +36,5 @@ class Patient extends Model{
             'doctor_id'
         );
     }
+
 }

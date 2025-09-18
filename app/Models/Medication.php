@@ -6,7 +6,7 @@ use Illuminate\Support\Facades\DB;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Facades\Notification;
 use Illuminate\Database\Eloquent\SoftDeletes;
-use App\Notifications\MedicationExpiredNotification;
+use App\Notifications\admin\MedicationExpiredNotification;
 
 class Medication extends Model{
 
@@ -26,7 +26,7 @@ class Medication extends Model{
             // تحقق إذا فيه إشعار موجود لنفس الدواء
             $exists = DB::table('notifications')
                 ->where('notifiable_id', 1) // ممكن تغيرها للدكتور/المسؤول
-                ->where('type', \App\Notifications\MedicationExpiredNotification::class)
+                ->where('type', MedicationExpiredNotification::class)
                 ->where('data->medication_id', $this->id) // يفحص بالـ JSON داخل data
                 ->exists();
 

@@ -30,7 +30,7 @@ class AppointmentController extends Controller{
         if($appointmentDate->isToday()) {
             $selectedDateTime = Carbon::parse($appointmentDate->toDateString() . ' ' . $selectedTime);
             if($selectedDateTime->lt(Carbon::now())) {
-                return response()->json(['data' => 2]);
+                return response()->json(['data' => 2]);    // عندما تحدد موعد في نفس اليوم لكن الوقت انتهى
             }
         }elseif($appointmentDate->isPast()) {
             $appointmentDate = Carbon::parse("next $selectedDay");
@@ -59,16 +59,17 @@ class AppointmentController extends Controller{
             return response()->json(['data' => 1]);     // الموعد محجوز
         }
 
-        $status = 'Pending';
 
+        $consultation_fee = Doctor::where('id' , $request->doctor_id)->value('consultation_fee');
         Appointment::create([
-            'patient_id'    => $request->patient_id,
-            'doctor_id'     => $request->doctor_id,
-            'department_id' => $request->department_id,
-            'date'          => $appointmentDate,
-            'time'          => $request->appointment_time,
-            'notes'         => $request->notes,
-            'status'        => $status,
+            'patient_id'        => $request->patient_id,
+            'doctor_id'         => $request->doctor_id,
+            'department_id'     => $request->department_id,
+            'date'              => $appointmentDate,
+            'time'              => $request->appointment_time,
+            'consultation_fee'  => $consultation_fee,
+            'notes'             => $request->notes,
+            'status'            => 'Pending',
         ]);
 
         return response()->json(['data' => 3]);      // تم الحجز بنجاح
@@ -141,9 +142,9 @@ class AppointmentController extends Controller{
 
 
 
-    public function descriptionAppointment($id){
+    public function detailsAppointment($id){
         $appointment = Appointment::findOrFail($id);
-        return view('Backend.admin.appointments.description', compact('appointment'));
+        return view('Backend.admin.appointments.details', compact('appointment'));
     }
 
 
@@ -160,7 +161,20 @@ class AppointmentController extends Controller{
 
     public function updateAppointment(Request $request, $id){
         $selectedDay = $request->appointment_day;
-        $appointmentDate = Carbon::parse("next $selectedDay")->toDateString();
+        $selectedTime = $request->appointment_time;
+
+        $appointmentDate = Carbon::parse("this $selectedDay");
+
+        if ($appointmentDate->isToday()) {
+            $selectedDateTime = Carbon::parse($appointmentDate->toDateString() . ' ' . $selectedTime);
+            if ($selectedDateTime->lt(Carbon::now())) {
+                return response()->json(['data' => 2]);   // الموعد انتهى وقته
+            }
+        } elseif ($appointmentDate->isPast()) {
+            $appointmentDate = Carbon::parse("next $selectedDay");
+        }
+
+        $appointmentDate = $appointmentDate->toDateString();
 
         $exists = Appointment::where('patient_id', $request->patient_id)
             ->where('doctor_id', $request->doctor_id)
@@ -171,22 +185,35 @@ class AppointmentController extends Controller{
             ->exists();
 
         if ($exists) {
-            return response()->json(['data' => 0]);
-        } else {
-            $appointment = Appointment::findOrFail($id);
-
-            $appointment->update([
-                'patient_id' => $request->patient_id,
-                'doctor_id' => $request->doctor_id,
-                'department_id'  => $request->department_id,
-                'date' => $appointmentDate,
-                'time' => $request->appointment_time,
-                'notes' => $request->notes,
-            ]);
-
-            return response()->json(['data' => 1]);
+            return response()->json(['data' => 0]);   // المريض عنده نفس الموعد
         }
+
+        $conflict = Appointment::where('doctor_id', $request->doctor_id)
+            ->where('date', $appointmentDate)
+            ->where('time', $request->appointment_time)
+            ->where('id', '!=', $id)
+            ->exists();
+
+        if ($conflict) {
+            return response()->json(['data' => 1]);   // الموعد محجوز
+        }
+
+        $appointment = Appointment::findOrFail($id);
+        $consultation_fee = Doctor::where('id', $request->doctor_id)->value('consultation_fee');
+
+        $appointment->update([
+            'patient_id'        => $request->patient_id,
+            'doctor_id'         => $request->doctor_id,
+            'department_id'     => $request->department_id,
+            'date'              => $appointmentDate,
+            'time'              => $request->appointment_time,
+            'consultation_fee'  => $consultation_fee,
+            'notes'             => $request->notes,
+        ]);
+
+        return response()->json(['data' => 3]);   // تم التعديل بنجاح
     }
+
 
 
 

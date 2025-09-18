@@ -41,7 +41,7 @@
                     <ul class="notification-list">
                         @forelse(auth()->user()->notifications as $notification)
                             <li class="notification-message {{ $notification->read_at ? 'read' : 'unread' }}">
-                                <a href="{{ route('notifications.read', $notification->id) }}">
+                                <a href="{{ $notification->data['url'] }}">
                                     <div class="media">
                                         <span class="avatar">
                                             <img alt="Notification" src="{{ asset($notification->data['image']) }}" class="img-fluid">

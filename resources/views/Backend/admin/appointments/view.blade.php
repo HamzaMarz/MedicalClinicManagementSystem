@@ -55,16 +55,28 @@
                 <div class="table-responsive">
                     <div class="mb-4 row">
                         <div class="col-md-4">
-                            <input type="text" id="search_input" class="form-control" placeholder="Search...">
+                            <div class="input-group">
+                                <div class="input-group-prepend">
+                                    <span class="input-group-text">
+                                        <i class="fa fa-search"></i>
+                                    </span>
+                                </div>
+                                <input type="text" id="search_input" name="keyword" class="form-control" placeholder="Search...">
+                            </div>
                         </div>
                         <div class="col-md-3">
-                            <select id="search_filter" class="form-control">
-                                <option value="patient">Patient Name</option>
-                                <option value="department">Department Name</option>
-                                <option value="doctor">Doctor Name</option>
-                                <option value="date">Appointment Date</option>
-                                <option value="status">Status</option>
-                            </select>
+                            <div class="input-group">
+                                <div class="input-group-prepend">
+                                    <span class="input-group-text">Search by:</span>
+                                </div>
+                                <select id="search_filter" class="form-control">
+                                    <option value="patient">Patient Name</option>
+                                    <option value="department">Department Name</option>
+                                    <option value="doctor">Doctor Name</option>
+                                    <option value="date">Appointment Date</option>
+                                    <option value="status">Status</option>
+                                </select>
+                            </div>
                         </div>
                     </div>
                     <table class="table mb-0 text-center table-bordered table-striped custom-table">

@@ -8,14 +8,13 @@ use App\Http\Controllers\Controller;
 
 class NotificationController extends Controller{
 
-    public function markAsRead($id){
-        $notification = auth()->user()->notifications()->findOrFail($id);
-        if ($notification->read_at === null) {
+    public function markRequestAsRead($id){
+        $notification = auth()->user()->notifications()->where('data->request_id', $id)->firstOrFail();
+
+        if (is_null($notification->read_at)) {
             $notification->markAsRead();
         }
 
-        $request = MedicationRequest::where('medication_id', $notification->data['medication_id'])->first();
-
-        return redirect()->route('request_description', $request->id);
+        return redirect()->route('request_description', $notification->data['request_id']);
     }
 }

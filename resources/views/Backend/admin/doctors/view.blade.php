@@ -42,8 +42,16 @@
         </div>
         <div class="row mb-4">
             <div class="col-md-4">
-                <input type="text" id="search_input" name="keyword" class="form-control" placeholder="Search...">
+                <div class="input-group">
+                    <div class="input-group-prepend">
+                        <span class="input-group-text">
+                            <i class="fa fa-search"></i>
+                        </span>
+                    </div>
+                    <input type="text" id="search_input" name="keyword" class="form-control" placeholder="Search...">
+                </div>
             </div>
+
             <div class="col-md-3">
                 <div class="input-group">
                   <div class="input-group-prepend">
@@ -64,9 +72,7 @@
                         <div class="profile-widget">
                             <div class="doctor-img">
                                 <a class="avatar" href="{{ Route('profile_doctor' , ['id' => $doctor->id]) }}">
-                                    <img src="{{$doctor->user->image
-                                        ? asset($doctor->user->image)
-                                        : asset('default-avatar.png') }}">
+                                    <img src="{{ asset($doctor->user->image ?? 'assets/img/user.jpg') }}">
                                 </a>
                             </div>
                             <div class="dropdown profile-action">

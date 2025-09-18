@@ -17,6 +17,8 @@ class DatabaseSeeder extends Seeder
         $this->call(RolesAndPermissionsSeeder::class);
         $this->call(ClinicInfoSeeder::class);
         $this->call(DepartmentSeeder::class);
+        $this->call(SpecialtySeeder::class);
+        $this->call(DepartmentSpecialtySeeder::class);
         $this->call(JobTitlesSeeder::class);
         $this->call(PharmacySeeder::class);
 
@@ -28,6 +30,7 @@ class DatabaseSeeder extends Seeder
             'address' => 'Gaza',
             'date_of_birth' => '2002-03-13',
             'gender' => 'male',
+            'image' => 'assets\img\admin\admin.jpg',
         ]);
 
         Role::firstOrCreate([

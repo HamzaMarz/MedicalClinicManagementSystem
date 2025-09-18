@@ -14,8 +14,10 @@ return new class extends Migration
         Schema::create('doctors', function (Blueprint $table) {
             $table->id();
             $table->foreignId('employee_id')->constrained()->onDelete('cascade');
+            $table->foreignId('specialty_id')->nullable()->constrained('specialties')->onDelete('set null');
             $table->string('qualification')->nullable();
             $table->integer('experience_years')->nullable();
+            $table->decimal('consultation_fee', 5, 2);
             $table->timestamps();
         });
     }

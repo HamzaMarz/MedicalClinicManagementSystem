@@ -8,7 +8,7 @@
                 <div class="row">
                     <div class="col-md-6 col-sm-6 col-lg-6 col-xl-3">
                         <div class="dash-widget">
-							<span class="dash-widget-bg1"><i class="fa fa-stethoscope" aria-hidden="true"></i></span>
+							<span class="dash-widget-bg1"><i class="fas fa-building" aria-hidden="true"></i></span>
 							<div class="text-right dash-widget-info">
 								<h3>{{ $department_count }}</h3>
 								<span class="widget-title1">Departments <i class="fa fa-check" aria-hidden="true"></i></span>
@@ -18,10 +18,20 @@
 
                     <div class="col-md-6 col-sm-6 col-lg-6 col-xl-3">
                         <div class="dash-widget">
-                            <span class="dash-widget-bg4"><i class="fas fa-user" aria-hidden="true"></i></span>
+                            <span class="dash-widget-bg4"><i class="fas fa-stethoscope" aria-hidden="true"></i></span>
+                            <div class="text-right dash-widget-info">
+                                <h3>{{ $specialty_count }}</h3>
+                                <span class="widget-title4">Specialties <i class="fa fa-check" aria-hidden="true"></i></span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="col-md-6 col-sm-6 col-lg-6 col-xl-3">
+                        <div class="dash-widget">
+                            <span class="dash-widget-bg3" style="background-color: #6f42c1;"><i class="fas fa-user" aria-hidden="true"></i></span>
                             <div class="text-right dash-widget-info">
                                 <h3>{{ $employee_count }}</h3>
-                                <span class="widget-title4">Employees <i class="fa fa-check" aria-hidden="true"></i></span>
+                                <span class="widget-title3" style="background-color: #6f42c1;">Employees <i class="fa fa-check" aria-hidden="true"></i></span>
                             </div>
                         </div>
                     </div>

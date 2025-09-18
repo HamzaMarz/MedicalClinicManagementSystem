@@ -81,7 +81,7 @@
 
                         <tr>
                             <th><i class="fas fa-calendar-alt text-primary me-2"></i> Hire Date:</th>
-                            <td>{{ $employee->hire_date ?? '-' }}</td>
+                            <td>{{ $employee->jobTitles->pluck('hire_date')->map(fn($date) => \Carbon\Carbon::parse($date)->format('d/m/Y'))->implode(' , ') }}</td>
                         </tr>
                     </table>
 

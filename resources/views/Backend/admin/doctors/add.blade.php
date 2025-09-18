@@ -161,8 +161,46 @@
             </div>
           </div>
 
-          {{-- 2) Professional Information --}}
-          <div class="card">
+
+          {{-- 2) Assignment (Department) --}}
+        <div class="card">
+            <div class="card-header">Assignment</div>
+            <div class="card-body">
+              <div class="row">
+                <div class="col-sm-6">
+                    <label>Department <span class="text-danger">*</span></label>
+                    <div class="input-group">
+                        <div class="input-group-prepend">
+                            <span class="input-group-text"><i class="fas fa-building"></i></span>
+                        </div>
+                        <select id="department_id" name="department_id" class="form-control">
+                            <option disabled selected hidden>Select Department</option>
+                            @foreach($departments as $department)
+                                <option value="{{ $department->id }}">{{ $department->name }}</option>
+                            @endforeach
+                        </select>
+                    </div>
+                </div>
+
+                <div class="col-sm-6">
+                    <div class="form-group">
+                      <label>Speciality <span class="text-danger">*</span></label>
+                      <div class="input-group">
+                        <div class="input-group-prepend">
+                          <span class="input-group-text"><i class="fas fa-stethoscope"></i></span>
+                        </div>
+                        <select id="specialty_id" name="specialty_id" class="form-control">
+                          <option disabled selected hidden>Select Specialty</option>
+                        </select>
+                      </div>
+                    </div>
+                </div>
+              </div>
+            </div>
+        </div>
+
+
+        <div class="card">
             <div class="card-header">Professional Information</div>
             <div class="card-body">
               <div class="row">
@@ -197,32 +235,19 @@
                   </div>
                 </div>
 
-              </div>
-            </div>
-          </div>
-
-          {{-- 3) Assignment (Department) --}}
-          <div class="card">
-            <div class="card-header">Assignment</div>
-            <div class="card-body">
-              <div class="row">
                 <div class="col-sm-6">
-                    <label>Department <span class="text-danger">*</span></label>
+                    <label>Consultation Fee <span class="text-danger">*</span></label>
                     <div class="input-group">
                         <div class="input-group-prepend">
-                            <span class="input-group-text"><i class="fas fa-stethoscope"></i></span>
+                            <span class="input-group-text"><i class="fas fa-file-invoice-dollar"></i></span>
                         </div>
-                        <select id="department_id" name="department_id" class="form-control">
-                            <option disabled selected hidden>Select Department</option>
-                            @foreach($departments as $department)
-                                <option value="{{ $department->id }}">{{ $department->name }}</option>
-                            @endforeach
-                        </select>
+                        <input class="form-control" type="number" min="0" id="consultation_fee" name="consultation_fee">
                     </div>
                 </div>
+
               </div>
             </div>
-          </div>
+        </div>
 
         {{-- 4) Work Schedule --}}
         <div class="card">
@@ -276,7 +301,7 @@
 
                     {{-- Working Days --}}
                     <div class="row small-gutter w-100">
-                        <div class="col-sm-12">
+                        <div class="col-sm-6">
                             <div class="form-group">
                                 <label>Working Days <span class="text-danger">*</span></label>
                                 <div class="row gx-1">
@@ -374,121 +399,175 @@
 @endsection
 
 @section('js')
-    <script>
-        function isValidSelectValue(selectId) {
-            let val = $(`#${selectId}`).val();
-            return val !== '' && val !== null && val !== undefined && $(`#${selectId} option[value="${val}"]`).length > 0;
-        }
+<script>
+    function isValidSelectValue(selectId) {
+        let val = $(`#${selectId}`).val();
+        return val !== '' && val !== null && val !== undefined && $(`#${selectId} option[value="${val}"]`).length > 0;
+    }
 
-        $(document).ready(function () {
-            $('.addBtn').click(function (e) {
-                e.preventDefault();
+    $(document).ready(function () {
 
-                let name = $('#name').val().trim();
-                let date_of_birth = $('#date_of_birth').val().trim();
-                let department_id = $('#department_id').val();
-                let email = $('#email').val();
-                let password = $('#password').val();
-                let confirm_password = $('#confirm_password').val();
-                let phone = $('#phone').val().trim();
-                let address = $('#address').val().trim();
-                let work_start_time = $('#work_start_time').val();
-                let work_end_time = $('#work_end_time').val();
-                let gender = $('input[name="gender"]:checked').val();
-                let short_biography = $('#short_biography').val().trim();
-                let status = $('input[name="status"]:checked').val();
-                let image = document.querySelector('#image').files[0];
-                let qualification = $('#qualification').val().trim();
-                let experience_years = $('#experience_years').val();
+        // ✅ عند الضغط على زر الإضافة
+        $('.addBtn').click(function (e) {
+            e.preventDefault();
 
-                let workingDays = [];
-                $('input[name="working_days[]"]:checked').each(function () {
-                    workingDays.push($(this).val());
+            // 🔹 جمع القيم من الحقول
+            let name              = $('#name').val().trim();
+            let date_of_birth     = $('#date_of_birth').val().trim();
+            let department_id     = $('#department_id').val();
+            let specialty_id      = $('#specialty_id').val();
+            let email             = $('#email').val();
+            let password          = $('#password').val();
+            let confirm_password  = $('#confirm_password').val();
+            let phone             = $('#phone').val().trim();
+            let address           = $('#address').val().trim();
+            let work_start_time   = $('#work_start_time').val();
+            let work_end_time     = $('#work_end_time').val();
+            let gender            = $('input[name="gender"]:checked').val();
+            let short_biography   = $('#short_biography').val().trim();
+            let status            = $('input[name="status"]:checked').val();
+            let image             = document.querySelector('#image').files[0];
+            let qualification     = $('#qualification').val().trim();
+            let experience_years  = $('#experience_years').val();
+            let consultation_fee  = $('#consultation_fee').val();
+
+            let workingDays = [];
+            $('input[name="working_days[]"]:checked').each(function () {
+                workingDays.push($(this).val());
+            });
+
+            // ✅ تجهيز البيانات
+            let formData = new FormData();
+            formData.append('name', name);
+            formData.append('date_of_birth', date_of_birth);
+            formData.append('department_id', department_id);
+            formData.append('specialty_id', specialty_id);
+            formData.append('email', email);
+            formData.append('password', password);
+            formData.append('confirm_password', confirm_password);
+            formData.append('phone', phone);
+            formData.append('address', address);
+            formData.append('work_start_time', work_start_time);
+            formData.append('work_end_time', work_end_time);
+            formData.append('qualification', qualification);
+            formData.append('experience_years', experience_years);
+            formData.append('consultation_fee', consultation_fee);
+            formData.append('gender', gender);
+            formData.append('short_biography', short_biography);
+            formData.append('status', status);
+
+            if (image) {
+                formData.append('image', image);
+            }
+
+            workingDays.forEach(function (day) {
+                formData.append('working_days[]', day);
+            });
+
+            // ✅ التحقق من الحقول
+            if (name === '' || date_of_birth === ''
+                || !isValidSelectValue('department_id')
+                || !isValidSelectValue('specialty_id')
+                || email === '' || password === '' || confirm_password === ''
+                || phone === '' || address === ''
+                || !isValidSelectValue('qualification')
+                || experience_years === '' || consultation_fee === ''
+                || !isValidSelectValue('work_start_time')
+                || !isValidSelectValue('work_end_time')
+                || gender === undefined
+                || $('input[name="working_days[]"]:checked').length === 0) {
+
+                Swal.fire({
+                    title: 'Error!',
+                    text: 'Please Enter All Required Fields',
+                    icon: 'error',
+                    confirmButtonText: 'OK'
                 });
+                return;
+            }
+            else if (password !== confirm_password) {
+                Swal.fire({
+                    title: 'Error!',
+                    text: 'The Password Does Not Match The Confirmation Password',
+                    icon: 'error',
+                    confirmButtonText: 'OK'
+                });
+                return;
+            }
+            else if (consultation_fee <= 0) {
+                Swal.fire({
+                    title: 'Error!',
+                    text: 'The Consultation Fee Is Invalid',
+                    icon: 'error',
+                    confirmButtonText: 'OK'
+                });
+                return;
+            }
+            else if (work_start_time >= work_end_time) {
+                Swal.fire({
+                    title: 'Error!',
+                    text: 'The Timing Is Incorrect, Please Correct It',
+                    icon: 'error',
+                    confirmButtonText: 'OK'
+                });
+                return;
+            }
 
-
-                // ✅ استخدم FormData
-                let formData = new FormData();
-                formData.append('name', name);
-                formData.append('date_of_birth', date_of_birth);
-                formData.append('department_id', department_id);
-                formData.append('email', email);
-                formData.append('password', password);
-                formData.append('confirm_password', confirm_password);
-                formData.append('phone', phone);
-                formData.append('address', address);
-                formData.append('work_start_time', work_start_time);
-                formData.append('work_end_time', work_end_time);
-                formData.append('qualification', qualification);
-                formData.append('experience_years', experience_years);
-                formData.append('gender', gender);
-                formData.append('short_biography', short_biography);
-                formData.append('status', status);
-                if (image) {
-                    formData.append('image', image);
+            // ✅ إرسال الطلب Ajax
+            $.ajax({
+                method: 'POST',
+                url: "{{ route('store_doctor') }}",
+                data: formData,
+                processData: false,
+                contentType: false,
+                headers: {
+                    'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
+                },
+                success: function (response) {
+                    if (response.data == 0) {
+                        Swal.fire({
+                            title: 'Error!',
+                            text: 'This Doctor Already Exists',
+                            icon: 'error',
+                            confirmButtonText: 'OK'
+                        });
+                    } else if (response.data == 1) {
+                        Swal.fire({
+                            title: 'Success',
+                            text: 'Doctor Has Been Added Successfully',
+                            icon: 'success',
+                            confirmButtonText: 'OK'
+                        }).then(() => {
+                            window.location.href = '/admin/add/doctor';
+                        });
+                    }
                 }
+            });
+        });
 
-                workingDays.forEach(function (day) {
-                    formData.append('working_days[]', day);
-                });
+        // ✅ تحميل التخصصات عند اختيار القسم
+        $('#department_id').on('change', function () {
+            let departmentId = $(this).val();
 
-
-                if (name === '' || date_of_birth === '' || !isValidSelectValue('department_id')  || email === '' || password === '' || confirm_password === '' || phone === '' || address === '' || qualification === '' || experience_years === '' || !isValidSelectValue('work_start_time') || !isValidSelectValue('work_end_time') || gender === undefined  || $('input[name="working_days[]"]:checked').length === 0) {
-                    Swal.fire({
-                        title: 'Error!',
-                        text: 'Please Enter All Required Fields',
-                        icon: 'error',
-                        confirmButtonText: 'OK'
-                    });
-                    return;
-                }else if (password !== confirm_password){
-                    Swal.fire({
-                        title: 'Error!',
-                        text: 'The Password Does Not Match The Confirmation Password',
-                        icon: 'error',
-                        confirmButtonText: 'OK'
-                    });
-                    return;
-                }else if (work_start_time >= work_end_time){
-                    Swal.fire({
-                        title: 'Error!',
-                        text: 'The Timing Is Incorrect, Please Correct It',
-                        icon: 'error',
-                        confirmButtonText: 'OK'
-                    });
-                    return;
-                }else{
-                    $.ajax({
-                    method: 'POST',
-                    url: "{{ route('store_doctor') }}",
-                    data: formData,
-                    processData: false,
-                    contentType: false,
-                    headers: {
-                        'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
+            if (departmentId) {
+                $.ajax({
+                    url: '/admin/get-specialties-by-department/' + departmentId,
+                    type: 'GET',
+                    success: function (data) {
+                        $('#specialty_id').empty();
+                        $('#specialty_id').append('<option disabled selected hidden>Select Specialty</option>');
+                        $.each(data, function (key, value) {
+                            $('#specialty_id').append('<option value="' + value.id + '">' + value.name + '</option>');
+                        });
                     },
-                    success: function (response) {
-                        if (response.data == 0) {
-                            Swal.fire({
-                                title: 'Error!',
-                                text: 'This Doctor Already Exists',
-                                icon: 'error',
-                                confirmButtonText: 'OK'
-                            });
-                        } else if (response.data == 1) {
-                            Swal.fire({
-                                title: 'Success',
-                                text: 'Doctor Has Been Added Successfully',
-                                icon: 'success',
-                                confirmButtonText: 'OK'
-                            }).then(() => {
-                                window.location.href = '/admin/add/doctor';
-                            });
-                        }
+                    error: function () {
+                        alert('Failed to load specialties!');
                     }
                 });
             }
-            });
         });
-    </script>
+
+    });
+</script>
 @endsection
+

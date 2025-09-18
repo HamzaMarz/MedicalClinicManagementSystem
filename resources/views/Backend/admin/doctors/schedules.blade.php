@@ -80,9 +80,11 @@
 
                             <div class="text-center fw-semibold text-dark w-100" style="font-weight: bold;">
                                 Week:
-                                <span>{{ $startOfWeek->format('d/m/Y') }}</span>
-                                –
-                                <span>{{ $endOfWeek->format('d/m/Y') }}</span>
+                                [
+                                    <span>{{ $startOfWeek->format('d/m/Y') }}</span>
+                                    –
+                                    <span>{{ $endOfWeek->format('d/m/Y') }}</span>
+                                ]
 
                                 @if ($offset === 0)
                                     <div class="mt-1 text-success" style="font-size: 14px;">

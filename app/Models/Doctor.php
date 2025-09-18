@@ -9,6 +9,8 @@ class Doctor extends Model{
         'employee_id',
         'qualification',
         'experience_years',
+        'specialty_id',
+        'consultation_fee',
     ];
 
 
@@ -25,6 +27,11 @@ class Doctor extends Model{
             'employee_id',// Doctor.employee_id
             'user_id'     // Employee.user_id
         );
+    }
+
+
+    public function specialty(){
+        return $this->belongsTo(Specialty::class);
     }
 
 }

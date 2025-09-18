@@ -30,12 +30,10 @@
           @csrf
           @method('PUT')
 
-          {{-- 1) Doctor Information --}}
           <div class="card">
             <div class="card-header">Doctor Information</div>
             <div class="card-body">
               <div class="row">
-                {{-- Name --}}
                 <div class="col-sm-6">
                   <label>Doctor Name <span class="text-danger">*</span></label>
                   <div class="input-group">
@@ -43,8 +41,6 @@
                     <input type="text" class="form-control" id="name" name="name" value="{{ old('name', $user->name ?? '') }}">
                   </div>
                 </div>
-
-                {{-- DOB --}}
                 <div class="col-sm-6">
                   <label>Date of Birth <span class="text-danger">*</span></label>
                   <div class="input-group">
@@ -52,8 +48,6 @@
                     <input type="date" id="date_of_birth" name="date_of_birth" class="form-control" dir="ltr" lang="en" value="{{ old('date_of_birth', $user->date_of_birth ?? '') }}">
                   </div>
                 </div>
-
-                {{-- Phone --}}
                 <div class="col-sm-6">
                   <label>Phone <span class="text-danger">*</span></label>
                   <div class="input-group">
@@ -61,8 +55,6 @@
                     <input type="text" class="form-control" id="phone" name="phone" value="{{ old('phone', $user->phone ?? '') }}">
                   </div>
                 </div>
-
-                {{-- Email --}}
                 <div class="col-sm-6">
                   <label>Email <span class="text-danger">*</span></label>
                   <div class="input-group">
@@ -70,8 +62,6 @@
                     <input class="form-control" type="email" id="email" name="email" value="{{ old('email', $user->email ?? '') }}">
                   </div>
                 </div>
-
-                {{-- Password --}}
                 <div class="col-sm-6">
                   <label>Password</label>
                   <div class="input-group">
@@ -79,8 +69,6 @@
                     <input class="form-control" type="password" id="password" name="password" placeholder="Enter new password (optional)">
                   </div>
                 </div>
-
-                {{-- Confirm --}}
                 <div class="col-sm-6">
                   <label>Confirm Password</label>
                   <div class="input-group">
@@ -88,8 +76,6 @@
                     <input class="form-control" type="password" id="confirm_password" name="confirm_password" placeholder="Enter Confirm new password">
                   </div>
                 </div>
-
-                {{-- Address --}}
                 <div class="col-sm-6">
                   <label>Address <span class="text-danger">*</span></label>
                   <div class="input-group">
@@ -97,8 +83,6 @@
                     <input class="form-control" type="text" id="address" name="address" value="{{ old('address', $user->address ?? '') }}">
                   </div>
                 </div>
-
-                {{-- Avatar --}}
                 <div class="col-sm-6">
                   <div class="form-group">
                     <label>Avatar</label>
@@ -112,8 +96,6 @@
                     </div>
                   </div>
                 </div>
-
-                {{-- Gender --}}
                 <div class="col-sm-6">
                   <div class="form-group gender-select">
                     <label class="gen-label">Gender: <span class="text-danger">*</span></label>
@@ -129,17 +111,53 @@
                     </div>
                   </div>
                 </div>
-
               </div>
             </div>
           </div>
 
-          {{-- 2) Professional Information --}}
+          <div class="card">
+            <div class="card-header">Assignment</div>
+            <div class="card-body">
+              <div class="row">
+                <div class="col-sm-6">
+                  <div class="form-group">
+                    <label>Department <span class="text-danger">*</span></label>
+                    <div class="input-group">
+                      <div class="input-group-prepend">
+                        <span class="input-group-text"><i class="fas fa-building"></i></span>
+                      </div>
+                      <select id="department_id" name="department_id" class="form-control">
+                        <option disabled hidden>Select Department</option>
+                        @foreach($departments as $department)
+                          <option value="{{ $department->id }}" {{ $doctor->employee->department_id == $department->id ? 'selected' : '' }}>
+                            {{ $department->name }}
+                          </option>
+                        @endforeach
+                      </select>
+                    </div>
+                  </div>
+                </div>
+                <div class="col-sm-6">
+                  <div class="form-group">
+                    <label>Specialty <span class="text-danger">*</span></label>
+                    <div class="input-group">
+                      <div class="input-group-prepend">
+                        <span class="input-group-text"><i class="fas fa-stethoscope"></i></span>
+                      </div>
+                      <select id="specialty_id" name="specialty_id" class="form-control">
+                        <option disabled hidden>Select Specialty</option>
+                      </select>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+
           <div class="card">
             <div class="card-header">Professional Information</div>
             <div class="card-body">
               <div class="row">
-                {{-- Qualification --}}
                 <div class="col-sm-6">
                   <label>Qualification <span class="text-danger">*</span></label>
                   <div class="input-group">
@@ -156,8 +174,6 @@
                     </select>
                   </div>
                 </div>
-
-                {{-- Experience --}}
                 <div class="col-sm-6">
                   <label>Experience Years <span class="text-danger">*</span></label>
                   <div class="input-group">
@@ -165,167 +181,120 @@
                     <input class="form-control" type="number" min="0" id="experience_years" name="experience_years" value="{{ old('experience_years', $doctor->experience_years ?? '') }}">
                   </div>
                 </div>
+                <div class="col-sm-6">
+                  <label>Consultation Fee <span class="text-danger">*</span></label>
+                  <div class="input-group">
+                    <div class="input-group-prepend"><span class="input-group-text"><i class="fas fa-file-invoice-dollar"></i></span></div>
+                    <input class="form-control" type="number" min="0" id="consultation_fee" name="consultation_fee" value="{{ old('consultation_fee', $doctor->consultation_fee ?? '') }}">
+                  </div>
+                </div>
               </div>
             </div>
           </div>
 
-          {{-- 3) Assignment --}}
-          <div class="card">
-            <div class="card-header">Assignment</div>
-            <div class="card-body">
-                <div class="row">
-
-                    {{-- Department --}}
-                    <div class="col-sm-6">
-                        <div class="form-group">
-                            <label>Department <span class="text-danger">*</span></label>
-                            <div class="input-group">
-                                <div class="input-group-prepend">
-                                    <span class="input-group-text"><i class="fas fa-stethoscope"></i></span>
-                                </div>
-                                <select id="department_id" name="department_id" class="form-control">
-                                    @foreach($departments as $department)
-                                        <option value="{{ $department->id }}"
-                                            {{ $doctor->employee->department_id == $department->id ? 'selected' : '' }}>
-                                            {{ $department->name }}
-                                        </option>
-                                    @endforeach
-                                </select>
-                            </div>
-                        </div>
-                    </div>
-
-                </div>
-            </div>
-        </div>
-
-          {{-- 4) Work Schedule --}}
           <div class="card">
             <div class="card-header">Work Schedule</div>
             <div class="card-body">
-                <div class="row">
-
-                    {{-- Start Time --}}
-                    <div class="col-sm-6">
-                        <div class="form-group">
-                            <label>Work Start Time <span class="text-danger">*</span></label>
-                            <div class="input-group">
-                                <div class="input-group-prepend">
-                                    <span class="input-group-text"><i class="fas fa-clock"></i></span>
-                                </div>
-                                <select name="work_start_time" id="work_start_time" class="form-control">
-                                    <option disabled hidden>Select Start Time</option>
-                                    @php
-                                        $start = \Carbon\Carbon::createFromFormat('H:i:s', $clinic->work_start);
-                                        $end   = \Carbon\Carbon::createFromFormat('H:i:s', $clinic->work_end);
-                                        $savedStart = $employee->work_start_time ?? null; // القيمة المخزنة
-                                    @endphp
-                                    @for ($time = $start->copy(); $time->lte($end); $time->addHour())
-                                        <option value="{{ $time->format('H:i:s') }}"
-                                            {{ $savedStart === $time->format('H:i:s') ? 'selected' : '' }}>
-                                            {{ $time->format('H:i') }}
-                                        </option>
-                                    @endfor
-                                </select>
-                            </div>
-                        </div>
+              <div class="row">
+                <div class="col-sm-6">
+                  <div class="form-group">
+                    <label>Work Start Time <span class="text-danger">*</span></label>
+                    <div class="input-group">
+                      <div class="input-group-prepend">
+                        <span class="input-group-text"><i class="fas fa-clock"></i></span>
+                      </div>
+                      <select name="work_start_time" id="work_start_time" class="form-control">
+                        <option disabled hidden>Select Start Time</option>
+                        @php
+                          $start = \Carbon\Carbon::createFromFormat('H:i:s', $clinic->work_start);
+                          $end   = \Carbon\Carbon::createFromFormat('H:i:s', $clinic->work_end);
+                          $savedStart = $employee->work_start_time ?? null;
+                        @endphp
+                        @for ($time = $start->copy(); $time->lte($end); $time->addHour())
+                          <option value="{{ $time->format('H:i:s') }}" {{ $savedStart === $time->format('H:i:s') ? 'selected' : '' }}>
+                            {{ $time->format('H:i') }}
+                          </option>
+                        @endfor
+                      </select>
                     </div>
-
-                    {{-- End Time --}}
-                    <div class="col-sm-6">
-                        <div class="form-group">
-                            <label>Work End Time <span class="text-danger">*</span></label>
-                            <div class="input-group">
-                                <div class="input-group-prepend">
-                                    <span class="input-group-text"><i class="fas fa-clock"></i></span>
-                                </div>
-                                <select name="work_end_time" id="work_end_time" class="form-control">
-                                    <option disabled hidden>Select End Time</option>
-                                    @php
-                                        $savedEnd = $employee->work_end_time ?? null; // القيمة المخزنة
-                                    @endphp
-                                    @for ($time = $start->copy(); $time->lte($end); $time->addHour())
-                                        <option value="{{ $time->format('H:i:s') }}"
-                                            {{ $savedEnd === $time->format('H:i:s') ? 'selected' : '' }}>
-                                            {{ $time->format('H:i') }}
-                                        </option>
-                                    @endfor
-                                </select>
-                            </div>
-                        </div>
-                    </div>
-
-                    {{-- Working Days --}}
-                    <div class="row small-gutter w-100">
-                        <div class="col-sm-12">
-                            <div class="form-group">
-                                <label>Working Days <span class="text-danger">*</span></label>
-                                <div class="row gx-1">
-                                    @php
-                                        $daysColumn1 = ['Saturday','Sunday','Monday','Tuesday'];   // العمود الأول (٤ أيام)
-                                        $daysColumn2 = ['Wednesday','Thursday','Friday'];         // العمود الثاني (٣ أيام)
-                                        $clinicDays  = $clinic->work_days ?? [];                   // أيام العيادة
-                                        $savedDays   = $employee->working_days ?? [];              // الأيام المحفوظة للموظف
-                                    @endphp
-
-                                    {{-- العمود الأول --}}
-                                    <div class="col-6">
-                                        @foreach($daysColumn1 as $day)
-                                            <div class="form-check {{ in_array($day, $clinicDays) ? '' : 'text-muted' }}">
-                                                <input class="form-check-input"
-                                                       type="checkbox"
-                                                       name="working_days[]"
-                                                       value="{{ $day }}"
-                                                       id="day_{{ $day }}"
-                                                       {{ in_array($day, $clinicDays) ? '' : 'disabled' }}
-                                                       {{ in_array($day, $savedDays ?? []) ? 'checked' : '' }}>
-                                                <label class="form-check-label" for="day_{{ $day }}">
-                                                    {{ $day }}
-                                                </label>
-                                            </div>
-                                        @endforeach
-                                    </div>
-
-                                    {{-- العمود الثاني --}}
-                                    <div class="col-6">
-                                        @foreach($daysColumn2 as $day)
-                                            <div class="form-check {{ in_array($day, $clinicDays) ? '' : 'text-muted' }}">
-                                                <input class="form-check-input"
-                                                       type="checkbox"
-                                                       name="working_days[]"
-                                                       value="{{ $day }}"
-                                                       id="day_{{ $day }}"
-                                                       {{ in_array($day, $clinicDays) ? '' : 'disabled' }}
-                                                       {{ in_array($day, $savedDays ?? []) ? 'checked' : '' }}>
-                                                <label class="form-check-label" for="day_{{ $day }}">
-                                                    {{ $day }}
-                                                </label>
-                                            </div>
-                                        @endforeach
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-
+                  </div>
                 </div>
-            </div>
-        </div>
+                <div class="col-sm-6">
+                  <div class="form-group">
+                    <label>Work End Time <span class="text-danger">*</span></label>
+                    <div class="input-group">
+                      <div class="input-group-prepend">
+                        <span class="input-group-text"><i class="fas fa-clock"></i></span>
+                      </div>
+                      <select name="work_end_time" id="work_end_time" class="form-control">
+                        <option disabled hidden>Select End Time</option>
+                        @php
+                          $savedEnd = $employee->work_end_time ?? null;
+                        @endphp
+                        @for ($time = $start->copy(); $time->lte($end); $time->addHour())
+                          <option value="{{ $time->format('H:i:s') }}" {{ $savedEnd === $time->format('H:i:s') ? 'selected' : '' }}>
+                            {{ $time->format('H:i') }}
+                          </option>
+                        @endfor
+                      </select>
+                    </div>
+                  </div>
+                </div>
 
-          {{-- 5) Short Bio & Status --}}
+                <div class="row small-gutter">
+                    <div class="col-sm-12" id="working_days">
+                        <label>Working Days <span class="text-danger">*</span></label>
+                        @php
+                          $all_days = ['Saturday','Sunday','Monday','Tuesday','Wednesday','Thursday','Friday'];
+                          $clinicDays = $work_days ?? []; 
+                          $selectedDays = old('working_days', $doctor->employee->working_days ?? []);
+                        @endphp
+                        <div class="row">
+                          <div class="col-6">
+                            @foreach(array_slice($all_days,0,4) as $day)
+                              <div class="form-check {{ in_array($day,$clinicDays) ? '' : 'text-muted' }}">
+                                <input class="form-check-input"
+                                       type="checkbox"
+                                       name="working_days[]"
+                                       value="{{ $day }}"
+                                       id="day_{{ $day }}"
+                                       {{ in_array($day,$selectedDays) ? 'checked' : '' }}
+                                       {{ in_array($day,$clinicDays) ? '' : 'disabled' }}>
+                                <label class="form-check-label" for="day_{{ $day }}">{{ $day }}</label>
+                              </div>
+                            @endforeach
+                          </div>
+                          <div class="col-6">
+                            @foreach(array_slice($all_days,4) as $day)
+                              <div class="form-check {{ in_array($day,$clinicDays) ? '' : 'text-muted' }}">
+                                <input class="form-check-input"
+                                       type="checkbox"
+                                       name="working_days[]"
+                                       value="{{ $day }}"
+                                       id="day_{{ $day }}"
+                                       {{ in_array($day,$selectedDays) ? 'checked' : '' }}
+                                       {{ in_array($day,$clinicDays) ? '' : 'disabled' }}>
+                                <label class="form-check-label" for="day_{{ $day }}">{{ $day }}</label>
+                              </div>
+                            @endforeach
+                          </div>
+                        </div>
+                    </div>
+                </div>
+              </div>
+            </div>
+          </div>
+
           <div class="card">
             <div class="card-header">Short Biography & Status</div>
             <div class="card-body">
               <div class="row">
-                {{-- Bio --}}
                 <div class="col-sm-12">
                   <div class="form-group">
                     <label>Short Biography</label>
                     <textarea class="form-control" id="short_biography" name="short_biography" rows="3">{{ old('short_biography', $doctor->employee->short_biography ?? '') }}</textarea>
                   </div>
                 </div>
-
-                {{-- Status --}}
                 <div class="col-sm-12">
                   <div class="form-group">
                     <label class="display-block">Status</label>
@@ -339,148 +308,214 @@
                     </div>
                   </div>
                 </div>
-
               </div>
             </div>
           </div>
 
-          {{-- Submit --}}
           <div class="text-center m-t-20" style="margin-top:20px;">
             <button type="submit" class="btn btn-primary submit-btn editBtn" style="text-transform:none !important;">Edit Doctor</button>
           </div>
-
         </form>
       </div>
     </div>
-
   </div>
 </div>
 @endsection
 
 @section('js')
-
 <script>
+    function isValidSelectValue(selectId) {
+        let val = $(`#${selectId}`).val();
+        return val !== '' && val !== null && val !== undefined && $(`#${selectId} option[value="${val}"]`).length > 0;
+    }
 
-  function isValidSelectValue(id) {
-    const el = document.getElementById(id);
-    if (!el) return false;
-    const v = el.value;
-    return v !== '' && v !== null && v !== undefined;
-  }
+    $(document).ready(function () {
 
+        // ✅ عند الضغط على زر التعديل
+        $('.editBtn').click(function (e) {
+            e.preventDefault();
 
-  $(document).ready(function () {
+            // 🔹 جمع القيم من الحقول
+            let name              = $('#name').val().trim();
+            let date_of_birth     = $('#date_of_birth').val().trim();
+            let department_id     = $('#department_id').val();
+            let specialty_id      = $('#specialty_id').val();
+            let email             = $('#email').val();
+            let password          = $('#password').val();
+            let confirm_password  = $('#confirm_password').val();
+            let phone             = $('#phone').val().trim();
+            let address           = $('#address').val().trim();
+            let work_start_time   = $('#work_start_time').val();
+            let work_end_time     = $('#work_end_time').val();
+            let gender            = $('input[name="gender"]:checked').val();
+            let short_biography   = $('#short_biography').val().trim();
+            let status            = $('input[name="status"]:checked').val();
+            let image             = document.querySelector('#image').files[0];
+            let qualification     = $('#qualification').val().trim();
+            let experience_years  = $('#experience_years').val();
+            let consultation_fee  = $('#consultation_fee').val();
 
-    $('.editBtn').on('click', function (e) {
-      e.preventDefault();
-
-        const name = $('#name').val() ? $('#name').val().trim() : '';
-        const date_of_birth = $('#date_of_birth').val().trim();
-        const department_id = $('#department_id').val();
-        const email = $('#email').val();
-        const password = $('#password').val();
-        const confirm_password = $('#confirm_password').val();
-        const phone = $('#phone').val() ? $('#phone').val().trim() : '';
-        const address = $('#address').val() ? $('#address').val().trim() : '';
-        const work_start_time = $('#work_start_time').val();
-        const work_end_time = $('#work_end_time').val();
-        const gender = $('input[name="gender"]:checked').val();
-        const short_biography = $('#short_biography').val() ? $('#short_biography').val().trim() : '';
-        const status = $('input[name="status"]:checked').val();
-        const image = document.querySelector('#image').files[0];
-        const qualification   = $('#qualification').val() ? $('#qualification').val().trim() : '';
-        const experience_years = $('#experience_years').val();
-
-        console.log(image);
-        let workingDays = [];
-        $('input[name="working_days[]"]:checked').each(function () {
-            workingDays.push($(this).val());
-        });
-
-
-        const formData = new FormData();
-        formData.append('name', name);
-        formData.append('date_of_birth', date_of_birth);
-        formData.append('department_id', department_id);
-        formData.append('email', email);
-        formData.append('password', password);
-        formData.append('confirm_password', confirm_password);
-        formData.append('phone', phone);
-        formData.append('address', address);
-        formData.append('work_start_time', work_start_time);
-        formData.append('work_end_time', work_end_time);
-        formData.append('qualification', qualification);
-        formData.append('experience_years', experience_years);
-        formData.append('gender', gender);
-        formData.append('short_biography', short_biography);
-        formData.append('status', status);
-        if (image) formData.append('image', image);
-        workingDays.forEach(d => formData.append('working_days[]', d));
-
-
-        if(!name || !date_of_birth || !department_id || !email || !phone || !address || !isValidSelectValue('qualification') || !experience_years || !gender || !isValidSelectValue('work_start_time') || !isValidSelectValue('work_end_time') ||
-            workingDays.length === 0) {
-            Swal.fire({
-            title: 'Error!',
-            text: 'Please Enter All Required Fields',
-            icon: 'error',
-            confirmButtonText: 'OK'
+            let workingDays = [];
+            $('input[name="working_days[]"]:checked').each(function () {
+                workingDays.push($(this).val());
             });
-            return;
-        }else if (password && password !== confirm_password) {
-            Swal.fire({
-            title: 'Error!',
-            text: 'Password confirmation does not match',
-            icon: 'error',
-            confirmButtonText: 'OK'
+
+            // ✅ تجهيز البيانات
+            let formData = new FormData();
+            formData.append('name', name);
+            formData.append('date_of_birth', date_of_birth);
+            formData.append('department_id', department_id);
+            formData.append('specialty_id', specialty_id);
+            formData.append('email', email);
+            formData.append('password', password);
+            formData.append('confirm_password', confirm_password);
+            formData.append('phone', phone);
+            formData.append('address', address);
+            formData.append('work_start_time', work_start_time);
+            formData.append('work_end_time', work_end_time);
+            formData.append('qualification', qualification);
+            formData.append('experience_years', experience_years);
+            formData.append('consultation_fee', consultation_fee);
+            formData.append('gender', gender);
+            formData.append('short_biography', short_biography);
+            formData.append('status', status);
+
+            if (image) {
+                formData.append('image', image);
+            }
+
+            workingDays.forEach(function (day) {
+                formData.append('working_days[]', day);
             });
-            return;
-        }else if (work_start_time >= work_end_time){
-            Swal.fire({
-                title: 'Error!',
-                text: 'The Timing Is Incorrect, Please Correct It',
-                icon: 'error',
-                confirmButtonText: 'OK'
-            });
+
+            // ✅ التحقق من الحقول
+            if (name === '' || date_of_birth === '' 
+                || !isValidSelectValue('department_id') 
+                || !isValidSelectValue('specialty_id')
+                || email === '' || phone === '' || address === '' 
+                || !isValidSelectValue('qualification') 
+                || experience_years === '' || consultation_fee === '' 
+                || !isValidSelectValue('work_start_time') 
+                || !isValidSelectValue('work_end_time') 
+                || gender === undefined  
+                || $('input[name="working_days[]"]:checked').length === 0) {
+
+                Swal.fire({
+                    title: 'Error!',
+                    text: 'Please Enter All Required Fields',
+                    icon: 'error',
+                    confirmButtonText: 'OK'
+                });
                 return;
-            }else{
-                $.ajax({
-                    type: 'POST',
-                    url: "{{ route('update_doctor', ['id' => $doctor->id]) }}",
-                    data: formData,
-                    processData: false,
-                    contentType: false,
-                    headers: {
-                        'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content'),
-                        'X-HTTP-Method-Override': 'PUT'
-                        },
-                    success: function (response) {
-                        if (response.data == 0) {
-                            Swal.fire({
+            } 
+            else if (password && password !== confirm_password) {
+                Swal.fire({
+                    title: 'Error!',
+                    text: 'The Password Does Not Match The Confirmation Password',
+                    icon: 'error',
+                    confirmButtonText: 'OK'
+                });
+                return;
+            } 
+            else if (consultation_fee <= 0) {
+                Swal.fire({
+                    title: 'Error!',
+                    text: 'The Consultation Fee Is Invalid',
+                    icon: 'error',
+                    confirmButtonText: 'OK'
+                });
+                return;
+            } 
+            else if (work_start_time >= work_end_time) {
+                Swal.fire({
+                    title: 'Error!',
+                    text: 'The Timing Is Incorrect, Please Correct It',
+                    icon: 'error',
+                    confirmButtonText: 'OK'
+                });
+                return;
+            }
+
+            // ✅ إرسال الطلب Ajax
+            $.ajax({
+                method: 'POST',
+                url: "{{ route('update_doctor', ['id' => $doctor->id]) }}",
+                data: formData,
+                processData: false,
+                contentType: false,
+                headers: {
+                    'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content'),
+                    'X-HTTP-Method-Override': 'PUT'
+                },
+                success: function (response) {
+                    if (response.data == 0) {
+                        Swal.fire({
                             title: 'Error!',
                             text: 'This Doctor Already Exists',
                             icon: 'error',
                             confirmButtonText: 'OK'
-                            });
-                        } else if (response.data == 1) {
-                            Swal.fire({
+                        });
+                    } else if (response.data == 1) {
+                        Swal.fire({
                             title: 'Success',
                             text: 'Doctor Has Been Updated Successfully',
                             icon: 'success',
                             confirmButtonText: 'OK'
-                            }).then(() => window.location.href = '/admin/view/doctors');
-                        } else {
-                            Swal.fire({
+                        }).then(() => {
+                            window.location.href = '/admin/view/doctors';
+                        });
+                    } else {
+                        Swal.fire({
                             title: 'Notice',
                             text: 'Unexpected response. Please try again.',
                             icon: 'info',
                             confirmButtonText: 'OK'
-                            });
-                        }
+                        });
+                    }
+                }
+            });
+        });
+
+        // ✅ تحميل التخصصات عند اختيار القسم
+        $('#department_id').on('change', function () {
+            let departmentId = $(this).val();
+
+            if (departmentId) {
+                $.ajax({
+                    url: '/admin/get-specialties-by-department/' + departmentId,
+                    type: 'GET',
+                    success: function (data) {
+                        $('#specialty_id').empty();
+                        $('#specialty_id').append('<option disabled selected hidden>Select Specialty</option>');
+                        $.each(data, function (key, value) {
+                            $('#specialty_id').append('<option value="' + value.id + '">' + value.name + '</option>');
+                        });
                     },
+                    error: function () {
+                        alert('Failed to load specialties!');
+                    }
                 });
             }
         });
+
+        // ✅ تحميل التخصص المحفوظ مسبقاً
+        let savedSpecialtyId = "{{ $doctor->specialty_id }}";
+        let departmentId = $('#department_id').val();
+        if (departmentId) {
+            $.ajax({
+                url: '/admin/get-specialties-by-department/' + departmentId,
+                type: 'GET',
+                success: function (data) {
+                    $('#specialty_id').empty();
+                    $('#specialty_id').append('<option disabled hidden>Select Specialty</option>');
+                    $.each(data, function (key, value) {
+                        let selected = (value.id == savedSpecialtyId) ? 'selected' : '';
+                        $('#specialty_id').append('<option value="' + value.id + '" ' + selected + '>' + value.name + '</option>');
+                    });
+                }
+            });
+        }
+
     });
 </script>
 @endsection
